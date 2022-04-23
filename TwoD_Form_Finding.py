@@ -149,6 +149,8 @@ class TwoDShapeFinding():
                     frames_to_a.append(
                         self.frame_names[self.frame_end_pts.index([c, a])])
             self.__linked_frames.append(frames_to_a)
+        # print(self.__links)
+        # print(self.__linked_frames)
 
     def set_force_density(self, init_rou, *args):
         if not self.frame_names:
@@ -163,6 +165,7 @@ class TwoDShapeFinding():
             for c in b:
                 fd_of_a.append(self.frame_force_density[c])
             self.__linked_force_densities.append(fd_of_a)
+        # print(self.__linked_force_densities)
 
     def set_fix(self, *args):
         if not self.fix:
@@ -326,6 +329,21 @@ class TwoDShapeFinding():
             for a, b in enumerate(self.init_F):
                 SapModel.PointObj.SetLoadForce(str(a), "Pre_loading",
                                                [0, 0, -b, 0, 0, 0])
+            # set turn on the "pre" case
+            print("--setting pre NL case")
+            SapModel.LoadCases.StaticNonlinear.SetCase("pre")
+            SapModel.LoadCases.StaticNonlinear.SetGeometricNonlinearity("pre",
+                                                                        2)
+            SapModel.LoadCases.StaticNonlinear.SetLoads("pre",
+                                                        2,
+                                                        ["Load", "Load"],
+                                                        ["Pre_temp",
+                                                         "Pre_loading"],
+                                                        [1, 1])
+            ret = SapModel.LoadCases.GetNameList_1()[1]
+            for case in ret:
+                SapModel.Analyze.SetRunCaseFlag(case, False)
+            SapModel.Analyze.SetRunCaseFlag("pre", True)
 
             print("Baking done.")
 
@@ -353,8 +371,17 @@ if __name__ == "__main__":
     # ccc.set_init_z()
     # ccc.set_connectivities()
     # ccc.set_force_density(1, [1, 0.5])
-    # ll1 = ccc.force_density("g", False,  1e-4,
+    # ll1 = ccc.force_density("n", True,  1e-4,
     #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
+    # print(ccc.fix)
+    # print(ccc.frame_names)
+    # print(ccc.frame_end_pts)
+    # print(ccc.frame_force_density)
+    # print(ccc.init_F)
+    # print(ccc.init_x)
+    # print(ccc.init_y)
+    # print(ccc.init_z)
+    # print(ll1)
 
     # 2d net under pretensioned with all 4 side constrained
     m, n = 29, 29
@@ -388,10 +415,10 @@ if __name__ == "__main__":
     aaa = TwoDShapeFinding(m, n)
     aaa.set_fix(*constrain)
     aaa.set_fix([20, 20], [10, 10])
-    aaa.set_init_F()
+    aaa.set_init_F(*loading)
     aaa.set_init_z(*boundary_z)
     aaa.set_init_z([20, 20, 10], [10, 10, 10])
     aaa.set_connectivities()
     aaa.set_force_density(10000, [333, -10])
-    aaa.force_density("g", False, 1e-4,
+    aaa.force_density("g", True, 1e-4,
                       "China", "JTG", "JTGD62 fpk1470", 0.06)
