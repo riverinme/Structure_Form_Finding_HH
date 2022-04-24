@@ -42,7 +42,7 @@ import time
 
 
 class TwoDShapeFinding():
-    def __init__(self, m, n,
+    def __init__(self, m, n, size,
                  fix=[],
                  init_z=[],
                  init_F=[], links=[],
@@ -51,10 +51,11 @@ class TwoDShapeFinding():
                  frame_force_density={}):
         self.n = n
         self.m = m
+        self.s = size
 
         # store point x sequences and y sequences
-        self.init_x = [j for i in range(self.n) for j in range(self.m)]
-        self.init_y = [i for i in range(self.n) for j in range(self.m)]
+        self.init_x = [j*self.s for i in range(self.n) for j in range(self.m)]
+        self.init_y = [i*self.s for i in range(self.n) for j in range(self.m)]
         self.init_z = init_z  # init Z coords in global sys
         self.init_F = init_F  # init point load in gravity dir
         self.fix = fix  # store point constrain
@@ -357,77 +358,68 @@ class TwoDShapeFinding():
 
 if __name__ == "__main__":
 
+    start = time.perf_counter()
+
     # examples
     # 1d rope
-    # m = 12
-    # ccc = TwoDShapeFinding(m, 1)
-    # ccc.set_fix([0, 0], [m-1, 0])
-    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    # ccc.set_init_z()
-    # ccc.set_connectivities()
-    # ll1 = ccc.force_density(1000, "g", True,  1e-4,
-    #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
-
-    # 1d arch
-    # m = 12
-    # ccc = TwoDShapeFinding(m, 1)
-    # ccc.set_fix([0, 0], [m-1, 0])
-    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    # ccc.set_init_z()
-    # ccc.set_connectivities()
-    # ccc.set_force_density(1, [1, 0.5])
-    # ll1 = ccc.force_density("n", True,  1e-4,
-    #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
-    # print(ccc.fix)
-    # print(ccc.frame_names)
-    # print(ccc.frame_end_pts)
-    # print(ccc.frame_force_density)
-    # print(ccc.init_F)
-    # print(ccc.init_x)
-    # print(ccc.init_y)
-    # print(ccc.init_z)
-    # print(ll1)
+    m = 100
+    ccc = TwoDShapeFinding(m, 1, 2)
+    ccc.set_fix([0, 0], [m-1, 0])
+    ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    ccc.set_init_z()
+    ccc.set_connectivities()
+    ccc.set_force_density(10)
+    ll1 = ccc.force_density("g", False,  1e-4,
+                            "China", "JTG", "JTGD62 fpk1470", 0.06)
+    print(ccc.fix)
+    print(ccc.frame_names)
+    print(ccc.frame_end_pts)
+    print(ccc.frame_force_density)
+    print(ccc.init_F)
+    print(ccc.init_x)
+    print(ccc.init_y)
+    print(ccc.init_z)
+    print(ll1)
 
     # 2d net under pretensioned with all 4 side constrained
-    start = time.perf_counter()
-    m, n = 29, 29
-    constrain = []
-    for w in range(m):
-        for v in range(n):
-            if v == 0 or v == n-1:
-                constrain.append([w, v])
-            else:
-                if w == 0 or w == m-1:
-                    constrain.append([w, v])
-    boundary_z = []
-    z_max = 1
-    for w in range(m):
-        for v in range(n):
-            if v == 0:
-                boundary_z.append([w, v, z_max/(m-1)*w])
-            elif v == n-1:
-                boundary_z.append([w, v, z_max-z_max/(m-1)*w])
-            elif w == 0 and 0 < v < n-1:
-                boundary_z.append([w, v, z_max/(n-1)*v])
-            elif w == m-1 and 0 < v < n-1:
-                boundary_z.append([w, v, z_max-z_max/(n-1)*v])
-    loading = []
-    unit = 0.1
-    for w in range(m):
-        for v in range(n):
-            if 0 < v < n-1 and 0 < w < m-1:
-                loading.append([w, v, unit])
+    # m, n = 29, 29
+    # constrain = []
+    # for w in range(m):
+    #     for v in range(n):
+    #         if v == 0 or v == n-1:
+    #             constrain.append([w, v])
+    #         else:
+    #             if w == 0 or w == m-1:
+    #                 constrain.append([w, v])
+    # boundary_z = []
+    # z_max = 1
+    # for w in range(m):
+    #     for v in range(n):
+    #         if v == 0:
+    #             boundary_z.append([w, v, z_max/(m-1)*w])
+    #         elif v == n-1:
+    #             boundary_z.append([w, v, z_max-z_max/(m-1)*w])
+    #         elif w == 0 and 0 < v < n-1:
+    #             boundary_z.append([w, v, z_max/(n-1)*v])
+    #         elif w == m-1 and 0 < v < n-1:
+    #             boundary_z.append([w, v, z_max-z_max/(n-1)*v])
+    # loading = []
+    # unit = 0.1
+    # for w in range(m):
+    #     for v in range(n):
+    #         if 0 < v < n-1 and 0 < w < m-1:
+    #             loading.append([w, v, unit])
 
-    aaa = TwoDShapeFinding(m, n)
-    aaa.set_fix(*constrain)
-    aaa.set_fix([20, 20], [10, 10])
-    aaa.set_init_F(*loading)
-    aaa.set_init_z(*boundary_z)
-    aaa.set_init_z([20, 20, 10], [10, 10, 10])
-    aaa.set_connectivities()
-    aaa.set_force_density(10000, [333, -10])
-    aaa.force_density("g", False, 1e-8,
-                      "China", "JTG", "JTGD62 fpk1470", 0.06)
+    # aaa = TwoDShapeFinding(m, n, 2)
+    # aaa.set_fix(*constrain)
+    # aaa.set_fix([20, 20], [10, 10])
+    # aaa.set_init_F(*loading)
+    # aaa.set_init_z(*boundary_z)
+    # aaa.set_init_z([20, 20, 10], [10, 10, 10])
+    # aaa.set_connectivities()
+    # aaa.set_force_density(10000, [333, -10])
+    # aaa.force_density("g", False, 1e-8,
+    #                   "China", "JTG", "JTGD62 fpk1470", 0.06)
 
     end = time.perf_counter()
     print("Run time: {} ms".format((end-start)*1000))
