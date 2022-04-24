@@ -38,7 +38,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import comtypes.client
 import sys
-import time
 
 
 class TwoDShapeFinding():
@@ -196,11 +195,10 @@ class TwoDShapeFinding():
         xyz = self.init_x+self.init_y+self.init_z
         n = 3*self.m*self.n  # get the lenght of the 1d list to process
         convergence = [1 for i in range(n)]  # storing convergence numbers
-        iter_xyz = list(enumerate(xyz))
 
         # main
         while sum(convergence)/n > tolerance:
-            for w, c in iter_xyz:
+            for w in range(n):
                 a = w // (self.m*self.n)
                 b = w % (self.m*self.n)
                 cc = xyz[w]
@@ -218,9 +216,6 @@ class TwoDShapeFinding():
                                        zip(self.__links[b],
                                            self.__linked_force_densities[b])])
                                   ) / sum(self.__linked_force_densities[b])
-                conv_w = abs(xyz[w]-cc)
-                if conv_w < tolerance:
-                    iter_xyz.remove((w, c))
                 convergence[w] = abs(xyz[w]-cc)
 
         # collecting new coordinats
@@ -389,7 +384,6 @@ if __name__ == "__main__":
     # print(ll1)
 
     # 2d net under pretensioned with all 4 side constrained
-    start = time.perf_counter()
     m, n = 29, 29
     constrain = []
     for w in range(m):
@@ -426,8 +420,5 @@ if __name__ == "__main__":
     aaa.set_init_z([20, 20, 10], [10, 10, 10])
     aaa.set_connectivities()
     aaa.set_force_density(10000, [333, -10])
-    aaa.force_density("g", False, 1e-8,
+    aaa.force_density("g", True, 1e-4,
                       "China", "JTG", "JTGD62 fpk1470", 0.06)
-
-    end = time.perf_counter()
-    print("Run time: {} ms".format((end-start)*1000))
