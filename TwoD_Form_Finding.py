@@ -381,65 +381,65 @@ if __name__ == "__main__":
     # print(ccc.init_z)
     # print(ll1)
 
-    m = 4
-    ccc = TwoDShapeFinding(m, 1, 1)
-    ccc.set_fix([0, 0], [m-1, 0])
-    ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    # ccc.set_init_F()
-    ccc.set_init_z()
-    ccc.set_connectivities()
-    ccc.set_force_density(1)
-    ll1 = ccc.force_density("g", True, 1e-9,
-                            "China", "JTG", "JTGD62 fpk1470", 0.06)
-    print(ccc.fix)
-    print(ccc.frame_names)
-    print(ccc.frame_end_pts)
-    print(ccc.frame_force_density)
-    print(ccc.init_F)
-    print(ccc.init_x)
-    print(ccc.init_y)
-    print(ccc.init_z)
-    print(ll1)
+    # m = 4
+    # ccc = TwoDShapeFinding(m, 1, 1)
+    # ccc.set_fix([0, 0], [m-1, 0])
+    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    # # ccc.set_init_F()
+    # ccc.set_init_z()
+    # ccc.set_connectivities()
+    # ccc.set_force_density(1)
+    # ll1 = ccc.force_density("g", True, 1e-9,
+    #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
+    # print(ccc.fix)
+    # print(ccc.frame_names)
+    # print(ccc.frame_end_pts)
+    # print(ccc.frame_force_density)
+    # print(ccc.init_F)
+    # print(ccc.init_x)
+    # print(ccc.init_y)
+    # print(ccc.init_z)
+    # print(ll1)
 
     # 2d net under pretensioned with all 4 side constrained
-    # m, n = 29, 29
-    # constrain = []
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0 or v == n-1:
-    #             constrain.append([w, v])
-    #         else:
-    #             if w == 0 or w == m-1:
-    #                 constrain.append([w, v])
-    # boundary_z = []
-    # z_max = 1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0:
-    #             boundary_z.append([w, v, z_max/(m-1)*w])
-    #         elif v == n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(m-1)*w])
-    #         elif w == 0 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max/(n-1)*v])
-    #         elif w == m-1 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(n-1)*v])
-    # loading = []
-    # unit = 0.1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if 0 < v < n-1 and 0 < w < m-1:
-    #             loading.append([w, v, unit])
+    m, n = 29, 29
+    constrain = []
+    for w in range(m):
+        for v in range(n):
+            if v == 0 or v == n-1:
+                constrain.append([w, v])
+            else:
+                if w == 0 or w == m-1:
+                    constrain.append([w, v])
+    boundary_z = []
+    z_max = 1
+    for w in range(m):
+        for v in range(n):
+            if v == 0:
+                boundary_z.append([w, v, z_max/(m-1)*w])
+            elif v == n-1:
+                boundary_z.append([w, v, z_max-z_max/(m-1)*w])
+            elif w == 0 and 0 < v < n-1:
+                boundary_z.append([w, v, z_max/(n-1)*v])
+            elif w == m-1 and 0 < v < n-1:
+                boundary_z.append([w, v, z_max-z_max/(n-1)*v])
+    loading = []
+    unit = 0
+    for w in range(m):
+        for v in range(n):
+            if 0 < v < n-1 and 0 < w < m-1:
+                loading.append([w, v, unit])
 
-    # aaa = TwoDShapeFinding(m, n, 2)
-    # aaa.set_fix(*constrain)
-    # aaa.set_fix([20, 20], [10, 10])
-    # aaa.set_init_F(*loading)
-    # aaa.set_init_z(*boundary_z)
-    # aaa.set_init_z([20, 20, 10], [10, 10, 10])
-    # aaa.set_connectivities()
-    # aaa.set_force_density(10000, [333, -10])
-    # aaa.force_density("g", False, 1e-8,
-    #                   "China", "JTG", "JTGD62 fpk1470", 0.06)
+    aaa = TwoDShapeFinding(m, n, 2)
+    aaa.set_fix(*constrain)
+    aaa.set_fix([20, 20], [10, 10])
+    aaa.set_init_F(*loading)
+    aaa.set_init_z(*boundary_z)
+    aaa.set_init_z([20, 20, 10], [10, 10, 10])
+    aaa.set_connectivities()
+    aaa.set_force_density(10000, [333, -10])
+    aaa.force_density("g", True, 1e-8,
+                      "China", "JTG", "JTGD62 fpk1470", 0.06)
 
     end = time.perf_counter()
     print("Run time: {} ms".format((end-start)*1000))
