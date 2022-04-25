@@ -323,8 +323,8 @@ class TwoDShapeFinding():
             print("--baking pre-temp and pre-loading")
             Young, thermal = SapModel.PropMaterial.GetMPUniaxial("tendon")[:-1]
             sec_area = SapModel.PropFrame.GetSectProps("T")[0]
-            pre_temp = [-z*i/(Young*sec_area*thermal)
-                        for i, z in zip(lengths, self.frame_force_density)]
+            pre_temp = [-self.frame_force_density[z]*i/(Young*sec_area*thermal)
+                        for i, z in zip(lengths, self.frame_names)]
             # baking pre_temp
             SapModel.LoadPatterns.Add("Pre_temp", 10)
             for nm, tp in zip(self.frame_names, pre_temp):
@@ -362,14 +362,34 @@ if __name__ == "__main__":
 
     # examples
     # 1d rope
-    m = 100
-    ccc = TwoDShapeFinding(m, 1, 2)
+    # m = 100
+    # ccc = TwoDShapeFinding(m, 1, 2)
+    # ccc.set_fix([0, 0], [m-1, 0])
+    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    # ccc.set_init_z()
+    # ccc.set_connectivities()
+    # ccc.set_force_density(10)
+    # ll1 = ccc.force_density("g", False,  1e-4,
+    #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
+    # print(ccc.fix)
+    # print(ccc.frame_names)
+    # print(ccc.frame_end_pts)
+    # print(ccc.frame_force_density)
+    # print(ccc.init_F)
+    # print(ccc.init_x)
+    # print(ccc.init_y)
+    # print(ccc.init_z)
+    # print(ll1)
+
+    m = 4
+    ccc = TwoDShapeFinding(m, 1, 1)
     ccc.set_fix([0, 0], [m-1, 0])
     ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    # ccc.set_init_F()
     ccc.set_init_z()
     ccc.set_connectivities()
-    ccc.set_force_density(10)
-    ll1 = ccc.force_density("g", False,  1e-4,
+    ccc.set_force_density(1)
+    ll1 = ccc.force_density("g", True, 1e-9,
                             "China", "JTG", "JTGD62 fpk1470", 0.06)
     print(ccc.fix)
     print(ccc.frame_names)
