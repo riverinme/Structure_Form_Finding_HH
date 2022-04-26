@@ -48,10 +48,11 @@ class TwoDShapeFinding():
                  init_F=[], links=[],
                  frame_names=[],
                  frame_end_pts=[],
-                 frame_force_density={}):
+                 frame_force_density={}, init_fr_sap=False):
         self.n = n
         self.m = m
         self.s = size
+        self.sap = init_fr_sap
 
         # store point x sequences and y sequences
         self.init_x = [j*self.s for i in range(self.n) for j in range(self.m)]
@@ -67,6 +68,83 @@ class TwoDShapeFinding():
         self.__linked_frames = []  # store sub lists of frames next to a point
         # store sub lists of force densities of frames next to a point
         self.__linked_force_densities = []
+        if init_fr_sap:
+            self.point_names = []
+
+    def init_fr_sap2000(self, group="ALL"):
+        if self.sap:
+            try:
+                mySapObject = comtypes.client.GetActiveObject(
+                    "CSI.SAP2000.API.SapObject")
+                print("Attached to the running SAP instance...")
+            except (OSError, comtypes.COMError):
+                print("No running instance of the program found.")
+                sys.exit(-1)
+            SapModel = mySapObject.SapModel
+
+        # init frames and points
+        SapModel.SelectObj.Group(group)
+        ret = SapModel.SelectObj.GetSelected()
+        SapModel.SelectObj.ClearSelection()
+        self.frame_names.clear()
+        for i in range(ret[0]):
+            if ret[1][i] == 2:
+                self.frame_names.append(ret[2][i])
+            elif ret[1][i] == 1:
+                self.point_names.append(ret[2][i])
+        # print(self.frame_names)
+        # print(self.point_names)
+        point_seq = [k for k, i in enumerate(self.point_names)]
+
+        # init boundary conditions
+        self.fix.clear()
+        for i in self.point_names:
+            ret = SapModel.PointObj.GetRestraint(i)
+            if ret[0][:3] == (True, True, True):
+                self.fix.append(True)
+            else:
+                self.fix.append(False)
+        # print(self.fix)
+
+        # init frame_end_pts:
+        self.frame_end_pts.clear()
+        for i in self.frame_names:
+            ret = SapModel.FrameObj.GetPoints(i)
+            seq0 = point_seq[self.point_names.index(ret[0])]
+            seq1 = point_seq[self.point_names.index(ret[1])]
+            self.frame_end_pts.append([seq0, seq1])
+        # print(self.frame_end_pts)
+
+        # init self.__links
+        self.__links.clear()
+        self.__linked_frames.clear()
+        for i, k in zip(self.point_names, point_seq):
+            ret = SapModel.PointObj.GetConnectivity(i)
+            link_a = []
+            frames_to_a = []
+            for j in range(ret[0]):
+                if ret[1][j] == 2:
+                    frames_to_a.append(ret[2][j])
+                    fr_index = self.frame_names.index(ret[2][j])
+                    if self.frame_end_pts[fr_index][0] == k:
+                        link_a.append(self.frame_end_pts[fr_index][1])
+                    else:
+                        link_a.append(self.frame_end_pts[fr_index][0])
+            self.__links.append(link_a)
+            self.__linked_frames.append(frames_to_a)
+        # print(self.__links)
+        # print(self.__linked_frames)
+
+        # init_X, Y, Z
+        self.init_x.clear()
+        self.init_y.clear()
+        self.init_z.clear()
+        for i in self.point_names:
+            ret = SapModel.PointObj.GetCoordCartesian(i)
+            self.init_x.append(ret[0])
+            self.init_y.append(ret[1])
+            self.init_z.append(ret[2])
+        # print(self.init_x, self.init_y, self.init_z)
 
     def __points_around_x(self, x, y):
         if self.n > 1:
@@ -158,6 +236,7 @@ class TwoDShapeFinding():
         if not self.frame_names:
             print("Frames are not initialized...")
             return -1
+        self.frame_force_density.clear()
         for a in self.frame_names:
             self.frame_force_density[a] = init_rou
         for nm, rou in args:
@@ -167,7 +246,6 @@ class TwoDShapeFinding():
             for c in b:
                 fd_of_a.append(self.frame_force_density[c])
             self.__linked_force_densities.append(fd_of_a)
-        # print(self.__linked_force_densities)
 
     def set_fix(self, *args):
         if not self.fix:
@@ -183,11 +261,18 @@ class TwoDShapeFinding():
                 self.init_z[pt[1]*self.m+pt[0]] = pt[2]
 
     def set_init_F(self, *args):
-        if not self.init_F:
-            self.init_F = [0 for a in range(self.n*self.m)]
-        if args:
-            for pt in args:
-                self.init_F[pt[1]*self.m+pt[0]] = pt[2]
+        if not self.sap:
+            if not self.init_F:
+                self.init_F = [0 for a in range(self.n*self.m)]
+            if args:
+                for pt in args:
+                    self.init_F[pt[1]*self.m+pt[0]] = pt[2]
+        else:
+            if not self.init_F:
+                self.init_F = [0 for a in range(len(self.point_names))]
+            if args:
+                for pt in args:
+                    self.init_F[self.point_names.index(pt[0])] = pt[1]
 
     def force_density(self, ret_type="t",
                       SAP2000=False, tolerance=1e-4, *args):
@@ -195,26 +280,32 @@ class TwoDShapeFinding():
         # initialize data
         # conbined x, y, z coords to a 1d list
         xyz = self.init_x+self.init_y+self.init_z
-        n = 3*self.m*self.n  # get the lenght of the 1d list to process
-        convergence = [1 for i in range(n)]  # storing convergence numbers
+        if not self.sap:  # get the lenght of the 1d list to process
+            n = 3*self.m*self.n
+        else:
+            n = 3*len(self.point_names)
+
+        # storing convergence numbers
+        convergence = [1 for i in range(len(xyz))]
         iter_xyz = list(enumerate(xyz))
 
         # main
+        print("Analysing...")
         while sum(convergence)/n > tolerance:
             for w, c in iter_xyz:
-                a = w // (self.m*self.n)
-                b = w % (self.m*self.n)
+                a = w // (n//3)
+                b = w % (n//3)
                 cc = xyz[w]
                 if not self.fix[b]:
                     if a == 2:
                         xyz[w] = (-self.init_F[b] +
-                                  sum([xyz[a*self.m*self.n+k] * r
+                                  sum([xyz[a*n//3+k] * r
                                        for k, r in
                                        zip(self.__links[b],
                                            self.__linked_force_densities[b])])
                                   ) / sum(self.__linked_force_densities[b])
                     else:
-                        xyz[w] = (sum([xyz[a*self.m*self.n+k] * r
+                        xyz[w] = (sum([xyz[a*n//3+k] * r
                                        for k, r in
                                        zip(self.__links[b],
                                            self.__linked_force_densities[b])])
@@ -225,9 +316,9 @@ class TwoDShapeFinding():
                 convergence[w] = abs(xyz[w]-cc)
 
         # collecting new coordinats
-        X = xyz[:self.m*self.n]
-        Y = xyz[self.m*self.n: 2*self.m*self.n]
-        Z = xyz[2*self.m*self.n:]
+        X = xyz[:n//3]
+        Y = xyz[n//3: 2*n//3]
+        Z = xyz[2*n//3:]
 
         # to get lenghts of frame elements
         lengths = []
@@ -239,36 +330,38 @@ class TwoDShapeFinding():
 
         # to generate the graphic result
         if ret_type == "g":
-            X = np.array(X).reshape(self.n, self.m)
-            Y = np.array(Y).reshape(self.n, self.m)
-            Z = np.array(Z).reshape(self.n, self.m)
-            if self.n > 1:
-                fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
-                ls = LightSource(270, 45)
-                rgb = ls.shade(Z, cmap=cm.gist_earth,
-                               vert_exag=0.1, blend_mode='soft')
-                ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                                facecolors=rgb,
-                                linewidth=0,
-                                antialiased=False, shade=False)
-                plt.show()
-            elif self.n == 1:
-                fig, ax = plt.subplots()
-                ax.plot(X[0], Z[0], linestyle="dashed", linewidth=1, c="r")
-                ax.set_xlabel("X")
-                ax.set_ylabel("Z")
-                ax.set_title("Shape of Rope under Gravity Loading")
-                ax.axis("equal")
-                for j in range(1, self.m-1):
-                    ax.arrow(X[0][j], Z[0][j],
-                             0, -self.init_F[j],
-                             linewidth=0.1,
-                             length_includes_head=False,
-                             head_width=0.25, head_length=1,
-                             fc="b", ec="b")
-                ax.scatter(X[0][0:self.m:self.m-1], Z[0][0:self.m:self.m-1],
-                           marker="^", c="black")
-                plt.show()
+            if not self.sap:
+                X = np.array(X).reshape(self.n, self.m)
+                Y = np.array(Y).reshape(self.n, self.m)
+                Z = np.array(Z).reshape(self.n, self.m)
+                if self.n > 1:
+                    fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+                    ls = LightSource(270, 45)
+                    rgb = ls.shade(Z, cmap=cm.gist_earth,
+                                   vert_exag=0.1, blend_mode='soft')
+                    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
+                                    facecolors=rgb,
+                                    linewidth=0,
+                                    antialiased=False, shade=False)
+                    plt.show()
+                elif self.n == 1:
+                    fig, ax = plt.subplots()
+                    ax.plot(X[0], Z[0], linestyle="dashed", linewidth=1, c="r")
+                    ax.set_xlabel("X")
+                    ax.set_ylabel("Z")
+                    ax.set_title("Shape of Rope under Gravity Loading")
+                    ax.axis("equal")
+                    for j in range(1, self.m-1):
+                        ax.arrow(X[0][j], Z[0][j],
+                                 0, -self.init_F[j],
+                                 linewidth=0.1,
+                                 length_includes_head=False,
+                                 head_width=0.25, head_length=1,
+                                 fc="b", ec="b")
+                    ax.scatter(X[0][0:self.m:self.m-1],
+                               Z[0][0:self.m:self.m-1],
+                               marker="^", c="black")
+                    plt.show()
 
         # or just to get the text result
         elif ret_type == "t":
@@ -281,7 +374,7 @@ class TwoDShapeFinding():
             print(np.array(ret[::-1]))
 
         # to bake the model to SAP2000
-        if SAP2000:
+        if SAP2000 or self.sap:
             try:
                 mySapObject = comtypes.client.GetActiveObject(
                     "CSI.SAP2000.API.SapObject")
@@ -291,50 +384,82 @@ class TwoDShapeFinding():
                 sys.exit(-1)
             SapModel = mySapObject.SapModel
             print("Start baking to SAP2000...")
-            # bake points
-            print("--baking points")
-            for i in range(self.n):
-                for j in range(self.m):
-                    SapModel.PointObj.AddCartesian(xyz[i*self.m+j],
-                                                   xyz[self.m*self.n +
-                                                       i*self.m+j],
-                                                   xyz[2*self.m*self.n +
-                                                       i*self.m+j],
-                                                   str(i*self.m+j),
-                                                   str(i*self.m+j))
+
             # define material and tendon section
             print("--defining material and tendon section")
             Country, code, mat_type, sec_dia = args
             SapModel.PropMaterial.AddMaterial("tendon", 7, Country,
                                               code, mat_type, "tendon")
             SapModel.PropFrame.SetCircle("T", "tendon", sec_dia)
-            # bake frames
-            print("--baking frames")
-            for nm, ij in zip(self.frame_names, self.frame_end_pts):
-                SapModel.FrameObj.AddByPoint(str(ij[0]), str(ij[1]), str(nm),
-                                             "T", str(nm))
-            # bake constrains
-            print("--baking constrains")
-            for a, b in enumerate(self.fix):
-                if b:
-                    SapModel.PointObj.setRestraint(str(a), [1, 1, 1, 0, 0, 0])
+
+            if not self.sap:  # if not mod from an existing sap...
+                # bake points
+                print("--baking points")
+                for i in range(self.n):
+                    for j in range(self.m):
+                        SapModel.PointObj.AddCartesian(xyz[i*self.m+j],
+                                                       xyz[self.m*self.n +
+                                                           i*self.m+j],
+                                                       xyz[2*self.m*self.n +
+                                                           i*self.m+j],
+                                                       str(i*self.m+j),
+                                                       str(i*self.m+j))
+
+                # bake frames
+                print("--baking frames")
+                for nm, ij in zip(self.frame_names, self.frame_end_pts):
+                    SapModel.FrameObj.AddByPoint(str(ij[0]), str(ij[1]),
+                                                 str(nm),
+                                                 "T", str(nm))
+
+                # bake constrains
+                print("--baking constrains")
+                for a, b in enumerate(self.fix):
+                    if b:
+                        SapModel.PointObj.setRestraint(str(a), [1, 1, 1,
+                                                                0, 0, 0])
+
+                # baking pre_loading
+                print("--baking pre-loading")
+                SapModel.LoadPatterns.Add("Pre_loading", 8)
+                for a, b in enumerate(self.init_F):
+                    SapModel.PointObj.SetLoadForce(str(a), "Pre_loading",
+                                                   [0, 0, -b, 0, 0, 0])
+
+            else:
+                # Move original points to new pos.
+                print("--moving pre points to new positions")
+                for i, pt in enumerate(self.point_names):
+                    SapModel.EditPoint.ChangeCoordinates_1(
+                        pt, X[i], Y[i], Z[i])
+
+                # replacing pre_loading
+                print("--baking pre-loading")
+                SapModel.LoadPatterns.Add("Pre_loading", 8)
+                for a, b in zip(self.point_names, self.init_F):
+                    SapModel.PointObj.DeleteLoadForce(a, "Pre_loading")
+                    SapModel.PointObj.SetLoadForce(a, "Pre_loading",
+                                                   [0, 0, -b, 0, 0, 0], True)
+
+                # re assign frame sections.
+                print("--re_assigning frame sections...")
+                for i in self.frame_names:
+                    SapModel.FrameObj.SetSection(i, "T")
+
             # define pre-cooling temp of each frame
             # T = ρL/(EAα) , so the stiffness K = EA/L=ρ/(Tα)
-            print("--baking pre-temp and pre-loading")
+            print("--baking pre-temp")
             Young, thermal = SapModel.PropMaterial.GetMPUniaxial("tendon")[:-1]
             sec_area = SapModel.PropFrame.GetSectProps("T")[0]
             pre_temp = [-self.frame_force_density[z]*i/(Young*sec_area*thermal)
                         for i, z in zip(lengths, self.frame_names)]
+
             # baking pre_temp
             SapModel.LoadPatterns.Add("Pre_temp", 10)
             for nm, tp in zip(self.frame_names, pre_temp):
                 SapModel.FrameObj.SetLoadTemperature(str(nm), "Pre_temp",
                                                      1, tp)
-            # baking pre_loading
-            SapModel.LoadPatterns.Add("Pre_loading", 8)
-            for a, b in enumerate(self.init_F):
-                SapModel.PointObj.SetLoadForce(str(a), "Pre_loading",
-                                               [0, 0, -b, 0, 0, 0])
+
             # set turn on the "pre" case
             print("--setting pre NL case")
             SapModel.LoadCases.StaticNonlinear.SetCase("pre")
@@ -350,7 +475,7 @@ class TwoDShapeFinding():
             for case in ret:
                 SapModel.Analyze.SetRunCaseFlag(case, False)
             SapModel.Analyze.SetRunCaseFlag("pre", True)
-
+            SapModel.View.RefreshView()
             print("Baking done.")
 
         return lengths  # for iterative form finding
@@ -362,13 +487,13 @@ if __name__ == "__main__":
 
     # examples
     # 1d rope
-    # m = 100
+    # m = 5
     # ccc = TwoDShapeFinding(m, 1, 2)
     # ccc.set_fix([0, 0], [m-1, 0])
     # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
     # ccc.set_init_z()
     # ccc.set_connectivities()
-    # ccc.set_force_density(10)
+    # ccc.set_force_density(0.1)
     # ll1 = ccc.force_density("g", False,  1e-4,
     #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
     # print(ccc.fix)
@@ -440,6 +565,16 @@ if __name__ == "__main__":
     aaa.set_force_density(10000, [333, -10])
     aaa.force_density("g", True, 1e-8,
                       "China", "JTG", "JTGD62 fpk1470", 0.06)
+
+    # example_ init from SAP2000
+    # aaa = TwoDShapeFinding(1, 1, 1, init_fr_sap=True)
+    # aaa.init_fr_sap2000()
+    # aaa.set_force_density(1, ["3", 3])
+    # # aaa.set_force_density(1)
+    # # aaa.set_init_F(*[[k, 1] for k in range(1, 4)])
+    # aaa.set_init_F(["2", 3], ["3", 10])
+    # ll1 = aaa.force_density("g", True,  1e-9,
+    #                         "China", "JTG", "JTGD62 fpk1470", 0.06)
 
     end = time.perf_counter()
     print("Run time: {} ms".format((end-start)*1000))
