@@ -374,7 +374,7 @@ class TwoDShapeFinding():
 
         # to bake the model to SAP2000
         if to_sap or self.sap:
-            # sap_mat_ID = 7 tendon or 2 concrete
+            # sap_mat_ID = 7 tendon or 2 concrete or 1 steel
             Country, code, mat_type, sap_mat_ID, sec_dia = args
             if not self.sap:  # if not mod from an existing sap...
                 try:
@@ -470,7 +470,7 @@ class TwoDShapeFinding():
             if sap_mat_ID == 7:
                 Young, thermal = SapModel.PropMaterial.GetMPUniaxial("tendon"
                                                                      )[:-1]
-            elif sap_mat_ID == 2:
+            elif sap_mat_ID == 2 or sap_mat_ID == 1:
                 ret = SapModel.PropMaterial.GetMPIsotropic("tendon")[:-2]
                 Young = ret[0]
                 thermal = ret[2]
@@ -518,8 +518,19 @@ if __name__ == "__main__":
     # ccc.set_init_z()
     # ccc.set_connectivities()
     # ccc.set_force_density(0.1)
-    # ll1 = ccc.force_density(1e-4, "t", False,
+    # ll1 = ccc.force_density(1e-4, "g", False,
     #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
+
+    # 1d arch
+    # m = 5
+    # ccc = TwoDShapeFinding(m, 1, 2)
+    # ccc.set_fix([0, 0], [m-1, 0])
+    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    # ccc.set_init_z()
+    # ccc.set_connectivities()
+    # ccc.set_force_density(-1)
+    # ll1 = ccc.force_density(1e-4, "t", True,
+    #                         "China", "GB", "Q345", 1, 0.06)
 
     # 2d net under pretensioned with all 4 side constrained
     # m, n = 29, 29
@@ -549,7 +560,6 @@ if __name__ == "__main__":
     #     for v in range(n):
     #         if 0 < v < n-1 and 0 < w < m-1:
     #             loading.append([w, v, unit])
-
     # aaa = TwoDShapeFinding(m, n, 2)
     # aaa.set_fix(*constrain)
     # aaa.set_fix([20, 20], [10, 10])
@@ -572,10 +582,10 @@ if __name__ == "__main__":
     # example_ init from SAP2000-igloo
     aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
     aaa.init_fr_sap2000()
-    aaa.set_force_density(-0.3)
+    aaa.set_force_density(-1)
     aaa.set_init_F()
     ll1 = aaa.force_density(1e-9, "g", False,
-                            "China", "GB", "GB50010 C30", 2, 0.8)
+                            "China", "GB", "GB50010 C30", 2, 0.1)
 
     end = time.perf_counter()
     print("Run time: {:.2f} ms".format((end-start)*1000))
