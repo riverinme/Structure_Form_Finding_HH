@@ -572,7 +572,7 @@ if __name__ == "__main__":
     # example_ init from SAP2000-igloo
     aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
     aaa.init_fr_sap2000()
-    aaa.set_force_density(-0.0003)
+    aaa.set_force_density(-0.3)
     aaa.set_init_F()
     ll1 = aaa.force_density(1e-9, "g", False,
                             "China", "GB", "GB50010 C30", 2, 0.8)
