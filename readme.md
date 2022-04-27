@@ -24,7 +24,7 @@ If the pre case is fogotten, the deformation will increase like
 
 To wrap up, the found geometry and pre-loading(prestressing and/or selfweight) shall be both included in the model. 
 
-###Update 20220427
+### Update 20220427
 
 Here is one example of igloo
 ![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/igloo.png)
