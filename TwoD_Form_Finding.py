@@ -587,15 +587,15 @@ if __name__ == "__main__":
 
     # examples
     # 1d rope
-    m = 5
-    ccc = TwoDShapeFinding(m, 1, 2)
-    ccc.set_fix([0, 0], [m-1, 0])
-    ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    ccc.set_init_z([0, 0, -1])
-    ccc.set_connectivities()
-    ccc.set_force_density(1, [1, 10])
-    ll1 = ccc.force_density("t", True,
-                            "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
+    # m = 5
+    # ccc = TwoDShapeFinding(m, 1, 2)
+    # ccc.set_fix([0, 0], [m-1, 0])
+    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    # ccc.set_init_z([0, 0, -1])
+    # ccc.set_connectivities()
+    # ccc.set_force_density(1, [1, 10])
+    # ll1 = ccc.force_density("t", True,
+    #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
     # ll1 = ccc.force_density("g", True)
 
     # 2d net under pretensioned with all 4 side constrained
@@ -644,19 +644,6 @@ if __name__ == "__main__":
     # aaa.set_init_F(["2", 3], ["3", 5], ["4", 2])
     # ll1 = aaa.force_density(1e-9, "g", False,
     #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-
-    # example_ init from SAP2000-igloo
-    # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
-    # aaa.init_fr_sap2000("jfjf",  # preloading case
-    #                     "China", "GB", "GB50010 C30", 2,  # default material
-    #                     0.1,  # default sec dia
-    #                     -1.5,  # force density
-    #                     ["G2",  # special group name 1
-    #                      "China", "GB", "GB50010 C50", 2,  # material for sp1
-    #                      0.01,  # force density for sp1
-    #                      -0.1]  # sec dia and end for sp1
-    #                     )
-    # ll1 = aaa.force_density("w", False)
 
     end = time.perf_counter()
     print("Run time: {:.2f} ms".format((end-start)*1000))
