@@ -68,6 +68,8 @@ class TwoDShapeFinding():
                 print("No running instance of the program found.")
                 sys.exit(-1)
             self.SapModel = mySapObject.SapModel
+            # Unlock the model first
+            self.SapModel.SetModelIsLocked(False)
 
             # store sap point labels
             self.point_names = []
@@ -83,14 +85,9 @@ class TwoDShapeFinding():
             self.init_y = [i*self.s for i in range(self.n)
                            for j in range(self.m)]
 
-    def init_fr_sap2000(self, group="ALL",
-                        Country="China",
-                        code="GB",
-                        mat_type="GB50010 C30",
-                        sap_mat_ID=2,
-                        sec_dia=0.1,
-                        init_rou=-1.5,
-                        *args):
+    def init_fr_sap2000(self, Country, code, mat_type, sap_mat_ID,
+                        sec_dia, init_rou,
+                        *args, group="ALL"):
 
         # init frames and points
         self.SapModel.SelectObj.Group(group)
@@ -183,6 +180,38 @@ class TwoDShapeFinding():
             self.frame_prpt[a] = [Young, sec_area, thermal]
 
         # define addtional material and tendon sections
+        for gp in args:
+            gp1, Cty1, cd1, mt1, sm1, sd1, ir1 = gp
+            print("----processing special group {}".format(gp1))
+            self.SapModel.SelectObj.Group(gp1)
+            ret = self.SapModel.SelectObj.GetSelected()
+            self.SapModel.SelectObj.ClearSelection()
+            frames_gp = []
+            for i in range(ret[0]):
+                if ret[1][i] == 2:
+                    frames_gp.append(ret[2][i])
+            self.SapModel.PropMaterial.AddMaterial("mat_{}".format(gp1),
+                                                   sm1,
+                                                   Cty1,
+                                                   cd1, mt1,
+                                                   "mat_{}".format(gp1))
+            self.SapModel.PropFrame.SetCircle(
+                "sec__{}".format(gp1), "mat_{}".format(gp1), sd1)
+            if sm1 == 7:
+                Y, th = self.SapModel.PropMaterial.GetMPUniaxial(
+                    "mat_{}".format(gp1))[:-1]
+            elif sm1 == 2 or sm1 == 1:
+                ret = self.SapModel.PropMaterial.GetMPIsotropic("mat_{}".
+                                                                format(gp1))[
+                                                                    :-2]
+                Y = ret[0]
+                th = ret[2]
+            sa = self.SapModel.PropFrame.GetSectProps("sec__{}".
+                                                      format(gp1))[0]
+            for a in frames_gp:
+                self.frame_force_density[a] = ir1
+                self.frame_prpt[a] = [Y, sa, th]
+                self.SapModel.FrameObj.SetSection(a, "sec__{}".format(gp1))
 
         # init force_desities for running
         for a, b in enumerate(self.__linked_frames):
@@ -317,8 +346,7 @@ class TwoDShapeFinding():
                 for pt in args:
                     self.init_F[self.point_names.index(pt[0])] = pt[1]
 
-    def force_density(self, tolerance=1e-4, ret_type="t",
-                      to_sap=False, *args):
+    def force_density(self, ret_type, to_sap, *args, tolerance=1e-9):
 
         # initialize data
         # conbined x, y, z coords to a 1d list
@@ -331,7 +359,11 @@ class TwoDShapeFinding():
 
         # main
         print("Analysing...")
+        count = 1
         while sum(convergence)/n > tolerance:
+            if count % 100 == 0:
+                print("--step {}, convergence = {}".format(count,
+                                                           sum(convergence)/n))
             for w, c in iter_xyz:
                 a = w // (n//3)
                 b = w % (n//3)
@@ -354,6 +386,8 @@ class TwoDShapeFinding():
                 if conv_w < tolerance:
                     iter_xyz.remove((w, c))
                 convergence[w] = conv_w
+                count += 1
+        print("--step {}, convergence = {}".format(count, sum(convergence)/n))
 
         # collecting new coordinats
         X = xyz[:n//3]
@@ -491,8 +525,6 @@ class TwoDShapeFinding():
 
             else:
                 SapModel = self.SapModel
-                # Unlock the model first
-                SapModel.SetModelIsLocked(False)
 
                 # replacing pre_loading
                 print("--baking pre-loading")
@@ -559,58 +591,48 @@ if __name__ == "__main__":
     ccc.set_init_z([0, 0, -1])
     ccc.set_connectivities()
     ccc.set_force_density(1, [1, 10])
-    ll1 = ccc.force_density(1e-4, "g", True,
-                            "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-
-    # 1d arch
-    # m = 5
-    # ccc = TwoDShapeFinding(m, 1, 2)
-    # ccc.set_fix([0, 0], [m-1, 0])
-    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    # ccc.set_init_z()
-    # ccc.set_connectivities()
-    # ccc.set_force_density(-1)
-    # ll1 = ccc.force_density(1e-4, "t", True,
-    #                         "China", "GB", "Q345", 1, 0.06)
+    # ll1 = ccc.force_density("t", True,
+    #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
+    ll1 = ccc.force_density("g", False)
 
     # 2d net under pretensioned with all 4 side constrained
-    # m, n = 29, 29
-    # constrain = []
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0 or v == n-1:
-    #             constrain.append([w, v])
-    #         else:
-    #             if w == 0 or w == m-1:
-    #                 constrain.append([w, v])
-    # boundary_z = []
-    # z_max = 1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0:
-    #             boundary_z.append([w, v, z_max/(m-1)*w])
-    #         elif v == n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(m-1)*w])
-    #         elif w == 0 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max/(n-1)*v])
-    #         elif w == m-1 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(n-1)*v])
-    # loading = []
-    # unit = 1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if 0 < v < n-1 and 0 < w < m-1:
-    #             loading.append([w, v, unit])
-    # aaa = TwoDShapeFinding(m, n, 2)
-    # aaa.set_fix(*constrain)
-    # aaa.set_fix([20, 20], [10, 10])
-    # aaa.set_init_F(*loading)
-    # aaa.set_init_z(*boundary_z)
-    # aaa.set_init_z([20, 20, 10], [10, 10, 10])
-    # aaa.set_connectivities()
-    # aaa.set_force_density(10000, [333, -10])
-    # aaa.force_density(1e-8, "g", True,
-    #                   "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
+    m, n = 29, 29
+    constrain = []
+    for w in range(m):
+        for v in range(n):
+            if v == 0 or v == n-1:
+                constrain.append([w, v])
+            else:
+                if w == 0 or w == m-1:
+                    constrain.append([w, v])
+    boundary_z = []
+    z_max = 1
+    for w in range(m):
+        for v in range(n):
+            if v == 0:
+                boundary_z.append([w, v, z_max/(m-1)*w])
+            elif v == n-1:
+                boundary_z.append([w, v, z_max-z_max/(m-1)*w])
+            elif w == 0 and 0 < v < n-1:
+                boundary_z.append([w, v, z_max/(n-1)*v])
+            elif w == m-1 and 0 < v < n-1:
+                boundary_z.append([w, v, z_max-z_max/(n-1)*v])
+    loading = []
+    unit = 1
+    for w in range(m):
+        for v in range(n):
+            if 0 < v < n-1 and 0 < w < m-1:
+                loading.append([w, v, unit])
+    aaa = TwoDShapeFinding(m, n, 2)
+    aaa.set_fix(*constrain)
+    aaa.set_fix([20, 20], [10, 10])
+    aaa.set_init_F(*loading)
+    aaa.set_init_z(*boundary_z)
+    aaa.set_init_z([20, 20, 10], [10, 10, 10])
+    aaa.set_connectivities()
+    aaa.set_force_density(10000, [333, -10])
+    aaa.force_density("g", False,
+                      "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
 
     # example_ init from SAP2000
     # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
@@ -622,10 +644,10 @@ if __name__ == "__main__":
 
     # example_ init from SAP2000-igloo
     # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
-    # aaa.init_fr_sap2000()
-    # # aaa.set_force_density(-1.5)
+    # aaa.init_fr_sap2000("China", "GB", "GB50010 C30", 2, 0.1, -1.5,
+    #                     ["G2", "China", "GB", "GB50010 C50", 2, 0.01, -0.1])
     # aaa.set_init_F()
-    # ll1 = aaa.force_density(1e-9)
+    # ll1 = aaa.force_density("w", False)
 
     end = time.perf_counter()
     print("Run time: {:.2f} ms".format((end-start)*1000))
