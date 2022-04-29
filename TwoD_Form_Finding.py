@@ -434,7 +434,8 @@ class TwoDShapeFinding():
                                  0, -self.init_F[j],
                                  linewidth=0.1,
                                  length_includes_head=False,
-                                 head_width=0.25, head_length=1,
+                                 head_width=self.init_F[j]/4,
+                                 head_length=self.init_F[j]/2,
                                  fc="b", ec="b")
                     ax.scatter(X[0][0:self.m:self.m-1],
                                Z[0][0:self.m:self.m-1],
@@ -584,19 +585,6 @@ class TwoDShapeFinding():
 if __name__ == "__main__":
 
     start = time.perf_counter()
-
-    # examples
-    # 1d rope
-    # m = 5
-    # ccc = TwoDShapeFinding(m, 1, 2)
-    # ccc.set_fix([0, 0], [m-1, 0])
-    # ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    # ccc.set_init_z([0, 0, -1])
-    # ccc.set_connectivities()
-    # ccc.set_force_density(1, [1, 10])
-    # ll1 = ccc.force_density("t", True,
-    #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-    # ll1 = ccc.force_density("g", True)
 
     # 2d net under pretensioned with all 4 side constrained
     # m, n = 29, 29
