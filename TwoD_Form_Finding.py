@@ -350,7 +350,8 @@ class TwoDShapeFinding():
             for pt in args:
                 self.init_F[pt[1]*self.m+pt[0]] = pt[2]
 
-    def force_density(self, ret_type, to_sap, *args, tolerance=1e-9):
+    def force_density(self, ret_type, to_sap, *args,
+                      tolerance=1e-9, remove=True):
 
         # initialize data
         # conbined x, y, z coords to a 1d list
@@ -387,7 +388,7 @@ class TwoDShapeFinding():
                                            self.__linked_force_densities[b])])
                                   ) / sum(self.__linked_force_densities[b])
                 conv_w = abs(xyz[w]-cc)
-                if conv_w < tolerance:
+                if conv_w < tolerance and remove:
                     iter_xyz.remove((w, c))
                 convergence[w] = conv_w
                 count += 1
