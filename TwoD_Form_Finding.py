@@ -426,9 +426,9 @@ class TwoDShapeFinding():
                 elif self.n == 1:
                     fig, ax = plt.subplots()
                     ax.plot(X[0], Z[0], linestyle="dashed", linewidth=1, c="r")
-                    ax.set_xlabel("X")
-                    ax.set_ylabel("Z")
-                    ax.set_title("Shape of Rope under Gravity Loading")
+                    # ax.set_xlabel("X")
+                    # ax.set_ylabel("Z")
+                    # ax.set_title("Shape of Rope under Gravity Loading")
                     ax.axis("equal")
                     for j in range(1, self.m-1):
                         ax.arrow(X[0][j], Z[0][j],
@@ -441,6 +441,7 @@ class TwoDShapeFinding():
                     ax.scatter(X[0][0:self.m:self.m-1],
                                Z[0][0:self.m:self.m-1],
                                marker="^", c="black")
+                    plt.axis("off")
                     plt.show()
 
             # or just to get the text result

@@ -21,7 +21,7 @@ for w in range(m):
             if w == 0 or w == m-1:
                 constrain.append([w, v])
 boundary_z = []
-z_max = 10
+z_max = 30
 for w in range(m):
     for v in range(n):
         if v == 0:
@@ -33,7 +33,7 @@ for w in range(m):
         elif w == m-1 and 0 < v < n-1:
             boundary_z.append([w, v, z_max-z_max/(n-1)*v])
 loading = []
-unit = 0
+unit = 10
 for w in range(m):
     for v in range(n):
         if 0 < v < n-1 and 0 < w < m-1:
