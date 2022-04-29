@@ -38,7 +38,6 @@ for i in range(5):
     ccc.set_force_density(1)
     ll1 = ccc.force_density("g", False)
 
-
 # ****eg3 random frame force densities
 for i in range(5):
     m = 10
