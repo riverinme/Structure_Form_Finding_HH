@@ -586,45 +586,6 @@ if __name__ == "__main__":
 
     start = time.perf_counter()
 
-    # 2d net under pretensioned with all 4 side constrained
-    # m, n = 29, 29
-    # constrain = []
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0 or v == n-1:
-    #             constrain.append([w, v])
-    #         else:
-    #             if w == 0 or w == m-1:
-    #                 constrain.append([w, v])
-    # boundary_z = []
-    # z_max = 1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if v == 0:
-    #             boundary_z.append([w, v, z_max/(m-1)*w])
-    #         elif v == n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(m-1)*w])
-    #         elif w == 0 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max/(n-1)*v])
-    #         elif w == m-1 and 0 < v < n-1:
-    #             boundary_z.append([w, v, z_max-z_max/(n-1)*v])
-    # loading = []
-    # unit = 1
-    # for w in range(m):
-    #     for v in range(n):
-    #         if 0 < v < n-1 and 0 < w < m-1:
-    #             loading.append([w, v, unit])
-    # aaa = TwoDShapeFinding(m, n, 2)
-    # aaa.set_fix(*constrain)
-    # aaa.set_fix([20, 20], [10, 10])
-    # aaa.set_init_F(*loading)
-    # aaa.set_init_z(*boundary_z)
-    # aaa.set_init_z([20, 20, 10], [10, 10, 10])
-    # aaa.set_connectivities()
-    # aaa.set_force_density(10000, [333, -10])
-    # aaa.force_density("g", False,
-    #                   "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-
     # example_ init from SAP2000
     # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
     # aaa.init_fr_sap2000()
