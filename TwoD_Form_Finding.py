@@ -185,10 +185,13 @@ class TwoDShapeFinding():
         self.init_F.clear()
         self.pre_loading = pre_loading
         for pt in self.point_names:
-            ret = self.SapModel.PointObj.GetLoadForce(pt)
-            for i in range(ret[0]):
-                if ret[2][i] == self.pre_loading:
-                    self.init_F.append(-ret[7][i])
+            try:
+                ret = self.SapModel.PointObj.GetLoadForce(pt)
+                for i in range(ret[0]):
+                    if ret[2][i] == self.pre_loading:
+                        self.init_F.append(-ret[7][i])
+            except Exception:
+                self.init_F.append(0)
 
         # define addtional material and tendon sections
         for gp in args:
