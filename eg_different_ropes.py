@@ -27,38 +27,38 @@ ccc.set_force_density(1, [1, 10])
 # False means not to export to sap2000
 ll1 = ccc.force_density("g", False)
 
-# # ****eg2 random loading
-# for i in range(5):
-#     m = 10
-#     ccc = TwoDShapeFinding(m, 1, 1)
-#     ccc.set_fix([0, 0], [m-1, 0])
-#     ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
-#     ccc.set_init_z()
-#     ccc.set_connectivities()
-#     ccc.set_force_density(1)
-#     ll1 = ccc.force_density("g", False)
+# ****eg2 random loading
+for i in range(5):
+    m = 10
+    ccc = TwoDShapeFinding(m, 1, 1)
+    ccc.set_fix([0, 0], [m-1, 0])
+    ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
+    ccc.set_init_z()
+    ccc.set_connectivities()
+    ccc.set_force_density(1)
+    ll1 = ccc.force_density("g", False)
 
-# # ****eg3 random frame force densities
-# for i in range(5):
-#     m = 10
-#     ccc = TwoDShapeFinding(m, 1, 1)
-#     ccc.set_fix([0, 0], [m-1, 0])
-#     ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
-#     ccc.set_init_z()
-#     ccc.set_connectivities()
-#     ccc.set_force_density(1)
-#     ll1 = ccc.force_density("g", False)
+# ****eg3 random frame force densities
+for i in range(5):
+    m = 10
+    ccc = TwoDShapeFinding(m, 1, 1)
+    ccc.set_fix([0, 0], [m-1, 0])
+    ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
+    ccc.set_init_z()
+    ccc.set_connectivities()
+    ccc.set_force_density(1)
+    ll1 = ccc.force_density("g", False)
 
-# # ****eg4 random force
-# for i in range(5):
-#     m = 10
-#     ccc = TwoDShapeFinding(m, 1, 1)
-#     ccc.set_fix([0, 0], [m-1, 0])
-#     ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-#     ccc.set_init_z()
-#     ccc.set_connectivities()
-#     ccc.set_force_density(1, *[[i, np.random.rand()*10] for i in range(m-1)])
-#     ll1 = ccc.force_density("g", False)
+# ****eg4 random force
+for i in range(5):
+    m = 10
+    ccc = TwoDShapeFinding(m, 1, 1)
+    ccc.set_fix([0, 0], [m-1, 0])
+    ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
+    ccc.set_init_z()
+    ccc.set_connectivities()
+    ccc.set_force_density(1, *[[i, np.random.rand()*10] for i in range(m-1)])
+    ll1 = ccc.force_density("g", False)
 
 # ****eg5 arch
 m = 10
