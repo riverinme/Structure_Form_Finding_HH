@@ -587,6 +587,42 @@ class TwoDShapeFinding():
         return lengths  # for iterative form finding
 
 
+def mass_assign(SapModel, dead_case_substitute, group="ALL"):
+    # 1, manualy mesh frames into segments like 5 or 10 segs.
+    # 2, run the default "DEAD" case to get mass data
+    # **note, mass source shall be defined to include all load patterns needed
+    SapModel.SetModelIsLocked(False)
+    ret = SapModel.LoadCases.GetNameList_1()[1]
+    for case in ret:
+        SapModel.Analyze.SetRunCaseFlag(case, False)
+    SapModel.Analyze.SetRunCaseFlag("DEAD", True)
+    SapModel.Analyze.RunAnalysis()
+    # 3, get mass of each node
+    SapModel.SelectObj.Group(group)
+    ret = SapModel.SelectObj.GetSelected()
+    SapModel.SelectObj.ClearSelection()
+    points = []
+    masses = []
+    for i in range(ret[0]):
+        if ret[1][i] == 1:
+            points.append(ret[2][i])
+    masses = []
+    for i in points:
+        ret = SapModel.Results.AssembledJointMass_1("MSSSRC1", i, 0)
+        masses.append(ret[3][0])
+    # 4, creat another case using masses fr step 3 to simulate dead
+    SapModel.SetModelIsLocked(False)
+    # 8 means "other" pattern
+    SapModel.LoadPatterns.Add(dead_case_substitute, 8)
+    for pt, ms in zip(points, masses):
+        SapModel.PointObj.DeleteLoadForce(pt, dead_case_substitute)
+        SapModel.PointObj.SetLoadForce(pt,  dead_case_substitute,
+                                       [0, 0, -ms*9.8, 0, 0, 0])
+    SapModel.Analyze.SetRunCaseFlag(dead_case_substitute, True)
+    # SapModel.Analyze.RunAnalysis()
+    return dead_case_substitute
+
+
 if __name__ == "__main__":
 
     start = time.perf_counter()
