@@ -617,7 +617,7 @@ def mass_assign(SapModel, dead_case_substitute, group="ALL"):
     for pt, ms in zip(points, masses):
         SapModel.PointObj.DeleteLoadForce(pt, dead_case_substitute)
         SapModel.PointObj.SetLoadForce(pt,  dead_case_substitute,
-                                       [0, 0, -ms*9.8, 0, 0, 0])
+                                       [0, 0, -ms*9.80665019960652, 0, 0, 0])
     SapModel.Analyze.SetRunCaseFlag(dead_case_substitute, True)
     # SapModel.Analyze.RunAnalysis()
     return dead_case_substitute
