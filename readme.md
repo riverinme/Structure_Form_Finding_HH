@@ -14,7 +14,7 @@
 
 
 ## Get started
-1. Initiate a MxN model
+1. Initiate a MxN 2d web model
 - Initiate an instance  
 `aaa = TwoDShapeFinding(m, n, 2)`  
     - m is node number in X dir.  
@@ -25,8 +25,11 @@
     
 - Set constrains  
 `aaa.set_fix(*constrain)`  
-`aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
-"constrains" is a list of column and row numbers,i.g. e.g. [[0, 0], [2, 4],...]  
+    - "constrains" is a list of column and row numbers,i.g. e.g. 
+    `[[0, 0], [2, 4],...]`  
+    - To add additional constrains
+    `aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
+    
 - Set joint loads  
 `# "loading" is a list of column, row and joint force,e.g. e.g. [[0, 0, 1], [2, 4, 10],...]``  
 `# Joint load are considered positive in gravity direction`
