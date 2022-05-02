@@ -39,21 +39,35 @@
     `aaa.set_init_F()`  
     
 - Set bounday conditions  
-`# "boundary_z" means to define initial z coords of every points.`  
 `aaa.set_init_z(*boundary_z)`  
-`aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
-`# One can just set initial load and z coords 0 by aaa.set_init_F() and aaa.set_init_z()`  
+    - "boundary_z" means to define initial z coords for every points.  
+    - One can just set initial Z coords of all 0 by  
+    `aaa.set_init_z()`  
+    - If you need some points having different z coords, just insert  
+    `aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
+    
 - Set connections  
-`aaa.set_connectivities() # must be done to get connections of nodes to each other.`
+    - This is must be done.  
+    `aaa.set_connectivities()`  
 - Set frame force densities  
-`# instance.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
-`# "default_rou is mandatory, special frame force density is optional`
 `aaa.set_force_density(10000)`  
+    - "10000" is to set all frames force densities of 10000 kN/m
+    - When it's postive, means the frame in tension.
+    - For special values, just use 
+    `aaa.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
+    
 - Run  
-`# "g" means to return a matplotlib graph. "w" returns all coords after form finding`  
-`# True means to return a sap model. Sap2000 must be open by hand first.`  
-`# If it is False, no material properties needed.`
 `aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)`  
+    - 1st parameter. Determine what's to return  
+        - "g" means to return a matplotlib graph.  
+        - "w" returns all coords after form finding instead.  
+    - 2nd parameter. Determine to bake to Sap2000  
+        - True means to return a sap model.  
+        > Sap2000 must be open by hand first.
+        > The rest parameters are for frame properties in Sap2000.
+        - If it is False, no material properties needed.
+        `aaa.force_density("g", False)`  
+2. Initate a model from Sap2000
 
 
 
