@@ -6,7 +6,7 @@
 ## Checklist before init a new model from SAP2000
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
 - If use special groups for different properties, make sure the group name has been assigned to target frames.
-- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [](eg_double_oval_form_found by dead.py)
+- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See ![](eg_double_oval_form_found by dead.py)
 
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.  
@@ -25,15 +25,19 @@
     
 - Set constrains  
 `aaa.set_fix(*constrain)`  
-    - "constrains" is a list of column and row numbers,i.g. e.g. 
+    - "constrains" is a list of column and row numbers, e.g.  
     `[[0, 0], [2, 4],...]`  
-    - To add additional constrains
+    - To add additional constrains  
     `aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
     
 - Set joint loads  
-`# "loading" is a list of column, row and joint force,e.g. e.g. [[0, 0, 1], [2, 4, 10],...]``  
-`# Joint load are considered positive in gravity direction`
 `aaa.set_init_F(*loading)`  
+    - "loading" is a list of column, row and joint force,e.g.  
+    `[[0, 0, 1], [2, 4, 10],...]`  
+    - Joint load are considered positive in gravity direction.  
+    - One can just set initial loads of all 0 by  
+    `aaa.set_init_F()`  
+    
 - Set bounday conditions  
 `# "boundary_z" means to define initial z coords of every points.`  
 `aaa.set_init_z(*boundary_z)`  
