@@ -10,14 +10,14 @@ Before init a new model from SAP2000...
 - If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 ## Get Started
 ### 1. Initiate a MxN 2d web model
-Open this file and start to rock!!!  
+**Open this file and start to rock!!!**  
 [eg_2d-pretensioned-net](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
 - Initiate an instance  
 `aaa = TwoDShapeFinding(m, n, 2)`  
     - m is node number in X dir.  
     - n is node number in Y dir.  
     - "2" means node distance is 2.  
-        > The unit sys is KN.m.C
+        > The unit sys is **KN.m.C**
 - Set constrains  
 `aaa.set_fix(*constrain)`  
     - "constrains" is a list of column and row numbers, e.g.  
@@ -59,9 +59,10 @@ Open this file and start to rock!!!
         - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
 ### 2. Initate a model from Sap2000
-> To start, copy an sap model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
-> All nodes and frame elements will be used in form finding.  
-> The model unit MUST be **kN/m/C**.  
+> **Notes**
+> a), To start, copy an sap model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
+> b), All nodes and frame elements will be used in form finding.  
+> c), The model unit MUST be **KN.m.C**.  
 1. Open the model in SAP2000
 2. In py, 
     - initiate the instance,  
@@ -77,15 +78,15 @@ Open this file and start to rock!!!
         - 6th parameter, section diameter of the frame object.
             > Use circular rod to simulate everything for now...  
         - 7th parameter, the **frame force density**.  
-        >Since sap2000 involved, material properties thus are mandatory.  
-        >By using group definition in SAP2000, different materials/force densities are support. Just put group name and other special material properties in [].  
+            - Since sap2000 involved, material properties thus are mandatory.  
+            - By using group definition in SAP2000, different materials/force densities are support. Just put group name and other special material properties in [].  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
-        > The first 2 parameters are useless.  
-        > If 'remove=True', tolerance can be larger, like 1e-4.  
-        > FYI, this method can return frame lengths.  
+        - The first 2 parameters are useless.  
+        - If `remove=True`, tolerance can be larger, like 1e-4.  
+        - FYI, this method can return frame lengths.  
 3. If you want to do form finding under structure self weight,  
-    > replace `"Pre_loading"` by `mass_assign(a.SapModel, "Pre_loading")`  
+    - just replace `"Pre_loading"` by `mass_assign(a.SapModel, "Pre_loading")`.  
     
 
 
