@@ -15,11 +15,12 @@
 
 ## Get started
 1. Initiate a MxN model
-- Initiate an instance 
-`aaa = TwoDShapeFinding(m, n, 2)  
+- Initiate an instance  
+`aaa = TwoDShapeFinding(m, n, 2)`  
     - m is node number in X dir.  
     - n is node number in Y dir.  
     - "2" means node distance is 2.  
+      
     > The unit sys is KN.m.C
     
 - Set constrains  
