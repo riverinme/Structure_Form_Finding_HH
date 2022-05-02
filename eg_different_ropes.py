@@ -38,7 +38,7 @@ for i in range(5):
     ccc.set_force_density(1)
     ll1 = ccc.force_density("g", False)
 
-# ****eg3 random frame force densities
+# ****eg3 random joint forces
 for i in range(5):
     m = 10
     ccc = TwoDShapeFinding(m, 1, 1)
@@ -49,7 +49,7 @@ for i in range(5):
     ccc.set_force_density(1)
     ll1 = ccc.force_density("g", False)
 
-# ****eg4 random force
+# ****eg4 random frame force densities
 for i in range(5):
     m = 10
     ccc = TwoDShapeFinding(m, 1, 1)

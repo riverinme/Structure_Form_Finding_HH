@@ -10,16 +10,33 @@
 
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.
-- If initiate a mxn or mx1 model, following steps must be done.
-`aaa = TwoDShapeFinding(m, n, 2)`  
+`aaa.init_fr_sap2000(args)`  
+- If initiate a mxn or mx1 model, following steps must be done.  
+`aaa = TwoDShapeFinding(m, n, 2) # to initiate an instance`  
+  
+`# "constrains" is a list of column and row numbers,i.g. e.g. [[0, 0], [2, 4],...]``  
 `aaa.set_fix(*constrain)`  
 `aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
+  
+`# "loading" is a list of column, row and joint force,e.g. e.g. [[0, 0, 1], [2, 4, 10],...]``  
+`# Joint load are considered positive in gravity direction`
 `aaa.set_init_F(*loading)`  
+  
+`# "boundary_z" means to define initial z coords of every points.`  
 `aaa.set_init_z(*boundary_z)`  
 `aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
-`aaa.set_connectivities()`  
+`# One can just set initial load and z coords 0 by aaa.set_init_F() and aaa.set_init_z()`  
+  
+`aaa.set_connectivities() # must be done to get connections of nodes to each other.`
+  
+`# instance.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
+`# "default_rou is mandatory, special frame force density is optional`
 `aaa.set_force_density(10000)`  
-`aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06) # if to_sap is ***False***, no material properties needed.`  
+  
+`# "g" means to return a matplotlib graph. "w" returns all coords after form finding`  
+`# True means to return a sap model. Sap2000 must be open by hand first.`  
+`# If it is False, no material properties needed.`
+`aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)`  
 
 
 
