@@ -3,18 +3,21 @@
 
 **To find the shape/form of a highly geometry nonlinear structre.**
 
-## Checklist before init a new model from SAP2000
+## Checklist 
+Before init a new model from SAP2000...
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
 - If use special groups for different properties, make sure the group name has been assigned to target frames.
-- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See ![](eg_double_oval_form_found by dead.py)
+- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.  
 - If initiate a mxn or mx1 model, following steps must be done.  
 
 
-## Get started
-1. Initiate a MxN 2d web model
+## Get Started
+### 1. Initiate a MxN 2d web model
+Open this file and start to rock!!!  
+[](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
 - Initiate an instance  
 `aaa = TwoDShapeFinding(m, n, 2)`  
     - m is node number in X dir.  
@@ -32,7 +35,7 @@
     
 - Set joint loads  
 `aaa.set_init_F(*loading)`  
-    - "loading" is a list of column, row and joint force,e.g.  
+    - "loading" is a list of column, row and joint force, e.g.  
     `[[0, 0, 1], [2, 4, 10],...]`  
     - Joint load are considered positive in gravity direction.  
     - One can just set initial loads of all 0 by  
@@ -47,27 +50,28 @@
     `aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
     
 - Set connections  
+`aaa.set_connectivities()`  
     - This is must be done.  
-    `aaa.set_connectivities()`  
+    
 - Set frame force densities  
 `aaa.set_force_density(10000)`  
     - "10000" is to set all frames force densities of 10000 kN/m
     - When it's postive, means the frame in tension.
-    - For special values, just use 
+    - For special values, just use  
     `aaa.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
     
 - Run  
 `aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)`  
-    - 1st parameter. Determine what's to return  
+    - 1st parameter, what's to return.  
         - "g" means to return a matplotlib graph.  
         - "w" returns all coords after form finding instead.  
-    - 2nd parameter. Determine to bake to Sap2000  
+    - 2nd parameter, to bake to Sap2000  
         - True means to return a sap model.  
-        > Sap2000 must be open by hand first.
-        > The rest parameters are for frame properties in Sap2000.
-        - If it is False, no material properties needed.
+        > Sap2000 must be open by hand first.  
+        > The rest parameters are for frame properties in Sap2000.  
+        - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
-2. Initate a model from Sap2000
+### 2. Initate a model from Sap2000
 
 
 
