@@ -7,7 +7,7 @@
 Before init a new model from SAP2000...
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
 - If use special groups for different properties, make sure the group name has been assigned to target frames.
-- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
+- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [eg_double_oval_form_found%20by%20dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.  
@@ -17,7 +17,7 @@ Before init a new model from SAP2000...
 ## Get Started
 ### 1. Initiate a MxN 2d web model
 Open this file and start to rock!!!  
-[](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
+[eg_2d-pretensioned-net](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
 - Initiate an instance  
 `aaa = TwoDShapeFinding(m, n, 2)`  
     - m is node number in X dir.  
