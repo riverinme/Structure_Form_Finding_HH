@@ -11,15 +11,15 @@
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.
 - If initiate a mxn or mx1 model, following steps must be done.
-`aaa = TwoDShapeFinding(m, n, 2)` 
-`aaa.set_fix(*constrain)` 
-`aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains` 
-`aaa.set_init_F(*loading)` 
-`aaa.set_init_z(*boundary_z)` 
-`aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords` 
-`aaa.set_connectivities()` 
-`aaa.set_force_density(10000)` 
-`aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06) # if to_sap is ***False***, no material properties needed.`
+`aaa = TwoDShapeFinding(m, n, 2)`  
+`aaa.set_fix(*constrain)`  
+`aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
+`aaa.set_init_F(*loading)`  
+`aaa.set_init_z(*boundary_z)`  
+`aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
+`aaa.set_connectivities()`  
+`aaa.set_force_density(10000)`  
+`aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06) # if to_sap is ***False***, no material properties needed.`  
 
 
 
