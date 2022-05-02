@@ -15,28 +15,28 @@
 
 
 ## Get started
-- Initiate a model
+- Initiate a model  
 `aaa = TwoDShapeFinding(m, n, 2) # to initiate an instance`  
-- Set constrains
+- Set constrains  
 `# "constrains" is a list of column and row numbers,i.g. e.g. [[0, 0], [2, 4],...]`  
 `aaa.set_fix(*constrain)`  
 `aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
-- Set joint loads
+- Set joint loads  
 `# "loading" is a list of column, row and joint force,e.g. e.g. [[0, 0, 1], [2, 4, 10],...]``  
 `# Joint load are considered positive in gravity direction`
 `aaa.set_init_F(*loading)`  
-- Set bounday conditions
+- Set bounday conditions  
 `# "boundary_z" means to define initial z coords of every points.`  
 `aaa.set_init_z(*boundary_z)`  
 `aaa.set_init_z([20, 20, 10], [10, 10, 10]) # optional for addtional z coords`  
 `# One can just set initial load and z coords 0 by aaa.set_init_F() and aaa.set_init_z()`  
-- Set connections
+- Set connections  
 `aaa.set_connectivities() # must be done to get connections of nodes to each other.`
-- Set frame force densities
+- Set frame force densities  
 `# instance.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
 `# "default_rou is mandatory, special frame force density is optional`
 `aaa.set_force_density(10000)`  
-- Run
+- Run  
 `# "g" means to return a matplotlib graph. "w" returns all coords after form finding`  
 `# True means to return a sap model. Sap2000 must be open by hand first.`  
 `# If it is False, no material properties needed.`
