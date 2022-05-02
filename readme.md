@@ -6,21 +6,26 @@
 ## Checklist before init a new model from SAP2000
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
 - If use special groups for different properties, make sure the group name has been assigned to target frames.
-- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See **eg_double_oval_form_found by dead.py**
+- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [](eg_double_oval_form_found by dead.py)
 
 ## Notes
 - If use init_fr_sap, please modify pre-loads and constrains only in SAP2000.  
-`aaa.init_fr_sap2000(args)`  
 - If initiate a mxn or mx1 model, following steps must be done.  
 
 
 ## Get started
-- Initiate a model  
-`aaa = TwoDShapeFinding(m, n, 2) # to initiate an instance`  
+1. Initiate a MxN model
+- Initiate an instance 
+`aaa = TwoDShapeFinding(m, n, 2)  
+    - m is node number in X dir.  
+    - n is node number in Y dir.  
+    - "2" means node distance is 2.  
+    > The unit sys is KN.m.C
+    
 - Set constrains  
-`# "constrains" is a list of column and row numbers,i.g. e.g. [[0, 0], [2, 4],...]`  
 `aaa.set_fix(*constrain)`  
 `aaa.set_fix([20, 20], [10, 10]) # optional for additional constrains`  
+"constrains" is a list of column and row numbers,i.g. e.g. [[0, 0], [2, 4],...]  
 - Set joint loads  
 `# "loading" is a list of column, row and joint force,e.g. e.g. [[0, 0, 1], [2, 4, 10],...]``  
 `# Joint load are considered positive in gravity direction`
