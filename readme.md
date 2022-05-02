@@ -1,21 +1,21 @@
 ## About
 
 
-**To find the shape/form of a highly geometry nonlinear structre.**
+**To find the shape/form of a highly geometry-nonlinear structure.**
 
 ## Checklist 
 Before init a new model from SAP2000...
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
-- If use special groups for different properties, make sure the group name has been assigned to target frames.
-- If do form finding based on selfweight, iteration is needed, and mass source shall be defined in Sap2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
+- If using special groups for different properties, make sure the group name has been assigned to target frames.
+- If doing form-finding based on self-weight, iteration is needed, and mass source shall be defined in Sap2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 ## Get Started
-### 1. Initiate a MxN 2d web model
+### 1. Initiate an MxN 2d web model
 **Open this file and start to rock!!!**  
 [eg_2d-pretensioned-net](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
 - Initiate an instance  
 `aaa = TwoDShapeFinding(m, n, 2)`  
-    - m is node number in X dir.  
-    - n is node number in Y dir.  
+    - m is the node number in X dir.  
+    - n is the node number in Y dir.  
     - "2" means node distance is 2.  
         > The unit sys is **KN.m.C**
 - Set constrains  
@@ -28,12 +28,12 @@ Before init a new model from SAP2000...
 `aaa.set_init_F(*loading)`  
     - "loading" is a list of column, row and joint force, e.g.  
     `[[0, 0, 1], [2, 4, 10],...]`  
-    - Joint load are considered positive in gravity direction.  
+    - Joint loads are considered positive in the gravity direction.  
     - One can just set initial loads of all 0 by  
     `aaa.set_init_F()`  
 - Set bounday conditions  
 `aaa.set_init_z(*boundary_z)`  
-    - "boundary_z" means to define initial z coords for every points.  
+    - "boundary_z" means to define initial z coords for every point.  
     - One can just set initial Z coords of all 0 by  
     `aaa.set_init_z()`  
     - If you need some points having different z coords, just insert  
@@ -44,14 +44,14 @@ Before init a new model from SAP2000...
 - Set frame force densities  
 `aaa.set_force_density(10000)`  
     - "10000" is to set all frames force densities of 10000 kN/m
-    - When it's postive, means the frame in tension.
+    - When it's positive, means the frame is in tension.
     - For special values, just use  
     `aaa.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
 - Run  
 `aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)`  
     - 1st parameter, what's to return.  
-        - "g" means to return a matplotlib graph.  
-        - "w" returns all coords after form finding instead.  
+        - "g" means to return a Matplotlib graph.  
+        - "w" returns all coords after form-finding instead.  
     - 2nd parameter, to bake to Sap2000  
         - True means to return a sap model.  
             > Sap2000 must be opened by hand first.  
@@ -73,19 +73,19 @@ Before init a new model from SAP2000...
                       `"China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000,`  
                       `["inner_up", "China", "JTG", "JTGD62 fpk1470", 7,`  
                       `0.3, 1500],...)`  
-        - 1st parameter, pre defined load patterns in Sap2000.
+        - 1st parameter, pre-defined load patterns in Sap2000.
         - 2nd to 5th parameters, Sap2000 material library parameters.
         - 6th parameter, section diameter of the frame object.
-            > Use circular rod to simulate everything for now...  
+            > Use a circular rod to simulate everything for now...  
         - 7th parameter, the **frame force density**.  
-            - Since sap2000 involved, material properties thus are mandatory.  
-            - By using group definition in SAP2000, different materials/force densities are support. Just put group name and other special material properties in [].  
+            - Since sap2000 is involved, material properties thus are mandatory.  
+            - By using group definition in SAP2000, different materials/force densities are supported. Just put group name and other special material properties in [].  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
         - The first 2 parameters are useless.  
         - If `remove=True`, tolerance can be larger, like 1e-4.  
         - FYI, this method can return frame lengths.  
-3. If you want to do form finding under structure self weight,  
+3. If you want to do form-finding under structure self-weight,  
     - just replace `"Pre_loading"` by `mass_assign(a.SapModel, "Pre_loading")`.  
     
 
