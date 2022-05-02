@@ -17,7 +17,7 @@ Open this file and start to rock!!!
     - m is node number in X dir.  
     - n is node number in Y dir.  
     - "2" means node distance is 2.  
-    > The unit sys is KN.m.C
+        > The unit sys is KN.m.C
 - Set constrains  
 `aaa.set_fix(*constrain)`  
     - "constrains" is a list of column and row numbers, e.g.  
@@ -54,19 +54,19 @@ Open this file and start to rock!!!
         - "w" returns all coords after form finding instead.  
     - 2nd parameter, to bake to Sap2000  
         - True means to return a sap model.  
-        > Sap2000 must be opened by hand first.  
-        > The rest parameters are for frame properties in Sap2000.  
+            > Sap2000 must be opened by hand first.  
+            > The rest parameters are for frame properties in Sap2000.  
         - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
 ### 2. Initate a model from Sap2000
 > To start, copy an sap model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
 > All nodes and frame elements will be used in form finding.  
 > The model unit MUST be **kN/m/C**.  
-- Open the model in SAP2000
-- In py, 
+1. Open the model in SAP2000
+2. In py, 
     - initiate the instance,  
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
-    > m, n, size will be no funtional.  
+        > m, n, size will be no funtional.  
     - then,  
     `a.init_fr_sap2000("Pre_loading",` 
                       `"China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000,`  
@@ -75,37 +75,17 @@ Open this file and start to rock!!!
         - 1st parameter, pre defined load patterns in Sap2000.
         - 2nd to 5th parameters, Sap2000 material library parameters.
         - 6th parameter, section diameter of the frame object.
-        > Use circular rod to simulate everything for now...  
+            > Use circular rod to simulate everything for now...  
         - 7th parameter, the **frame force density**.  
-    >Since sap2000 involved, material properties thus are mandatory.  
-    >By using group definition in SAP2000, different materials/force densities are support. Just put group name and other special material properties in [].  
-- 
+        >Since sap2000 involved, material properties thus are mandatory.  
+        >By using group definition in SAP2000, different materials/force densities are support. Just put group name and other special material properties in [].  
+    - Run
+    `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
+        > The first 2 parameters are useless.  
+        > If 'remove=True', tolerance can be larger, like 1e-4.  
+        > FYI, this method can return frame lengths.  
+3. If you want to do form finding under structure self weight,  
+    > replace `"Pre_loading"` by `mass_assign(a.SapModel, "Pre_loading")`  
+    
 
 
-## Original readme, will be deleted later
-Here is one example.
-
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/Eg2.png)
-
-Here is how it looks in SAP2000 with a external point load assigned,
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/unit_point_load.png)
-
-...and the initial deformation under pre-stressing.
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/pre_deformation.png)
-
-The deformation under the point load is shown below， 
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/unit_deformation_NL.png)
-
-...and the load case defination.
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/Unit_NL_case.png)
-
-If the pre case is fogotten, the deformation will increase like
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/unit_deformation_wo_pre.png)
-
-To wrap up, the found geometry and pre-loading(prestressing and/or selfweight) shall be both included in the model. 
-
-### Update 20220427
-
-Here is one example of igloo
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/igloo.png)
-![](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/Eg2/igloo_axial_forces.png)
