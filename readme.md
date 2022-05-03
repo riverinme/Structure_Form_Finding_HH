@@ -49,18 +49,18 @@ Before init a new model from SAP2000...
     `aaa.set_force_density(default_rou, [frameID1, rou1], [frameID2, rou2], ..)`  
 - Run  
 `aaa.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)`  
-    - 1st parameter, what's to return.  
+    - 1st argument, what's to return.  
         - "g" means to return a Matplotlib graph.  
         - "w" returns all coords after form-finding instead.  
-    - 2nd parameter, to bake to SAP2000  
-        - True means to return a sap model.  
+    - 2nd argument, to bake to SAP2000  
+        - True means to return a SAP2000 model.  
             > SAP2000 must be opened by hand first.  
             > The rest parameters are for frame properties in SAP2000.  
         - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
 ### 2. Initate a model from SAP2000
 > **Notes**
-> a), To start, copy an sap model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
+> a), To start, copy an SAP2000 model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
 > b), All nodes and frame elements will be used in form finding.  
 > c), The model unit MUST be **KN.m.C**.  
 1. Open the model in SAP2000
@@ -68,8 +68,8 @@ Before init a new model from SAP2000...
     - Initiate the instance  
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
         > m, n, size will be no funtional.  
-    - Read data from the sap model  
-    `a.init_fr_SAP2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
+    - Read data from the SAP2000 model  
+    `a.init_fr_sap2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
         - 1st argument, a pre-defined load pattern in SAP2000.  
             > Only point loads are allowed, nevertheless the pattern name can be anything. See bullet point 3 if you want to do form-finding under self-weight.  
         - 2nd to 5th arguments, SAP2000 material library parameters.  
@@ -79,7 +79,7 @@ Before init a new model from SAP2000...
         - 7th argument, the **frame force density**.  
             - Since SAP2000 is involved, material properties thus are mandatory.  
             - By using group definition in SAP2000, different materials/force densities are supported. Put group name and other special material properties in [], attaching it to the end of default args.  
-            `a.init_fr_SAP2000("Pre_loading","China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000, ["group_name", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 1500],...)`  
+            `a.init_fr_sap2000("Pre_loading","China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000, ["group_name", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 1500],...)`  
                 > You can define as many group as you want, however using conceptional design and only add extra groups when necessary.  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
