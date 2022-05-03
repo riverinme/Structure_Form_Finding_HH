@@ -46,7 +46,7 @@ aaa.set_init_z(*boundary_z)
 aaa.set_init_z([20, 20, 10], [10, 10, 10])
 aaa.set_connectivities()
 aaa.set_force_density(10000)
-aaa.force_density("g", True,
+aaa.force_density("g", False,
                   "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
 
 end = time.perf_counter()

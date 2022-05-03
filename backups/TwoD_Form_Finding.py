@@ -78,6 +78,8 @@ class TwoDShapeFinding():
             self.init_y = []
             # store frame [E, A]
             self.frame_prpt = {}
+            # store pre_loading case
+            self.pre_loading = ""
         else:
             # store point x sequences and y sequences
             self.init_x = [j*self.s for i in range(self.n)
@@ -85,7 +87,7 @@ class TwoDShapeFinding():
             self.init_y = [i*self.s for i in range(self.n)
                            for j in range(self.m)]
 
-    def init_fr_sap2000(self, Country, code, mat_type, sap_mat_ID,
+    def init_fr_sap2000(self, pre_loading, Country, code, mat_type, sap_mat_ID,
                         sec_dia, init_rou,
                         *args, group="ALL"):
 
@@ -178,6 +180,18 @@ class TwoDShapeFinding():
         for a in self.frame_names:
             self.frame_force_density[a] = init_rou
             self.frame_prpt[a] = [Young, sec_area, thermal]
+
+        # get preloading, gravity is positive.
+        self.init_F.clear()
+        self.pre_loading = pre_loading
+        for pt in self.point_names:
+            try:
+                ret = self.SapModel.PointObj.GetLoadForce(pt)
+                for i in range(ret[0]):
+                    if ret[2][i] == self.pre_loading:
+                        self.init_F.append(-ret[7][i])
+            except Exception:
+                self.init_F.append(0)
 
         # define addtional material and tendon sections
         for gp in args:
@@ -333,20 +347,14 @@ class TwoDShapeFinding():
                 self.init_z[pt[1]*self.m+pt[0]] = pt[2]
 
     def set_init_F(self, *args):
-        if not self.sap:
-            if not self.init_F:
-                self.init_F = [0 for a in range(self.n*self.m)]
-            if args:
-                for pt in args:
-                    self.init_F[pt[1]*self.m+pt[0]] = pt[2]
-        else:
-            if not self.init_F:
-                self.init_F = [1 for a in range(len(self.point_names))]
-            if args:
-                for pt in args:
-                    self.init_F[self.point_names.index(pt[0])] = pt[1]
+        if not self.init_F:
+            self.init_F = [0 for a in range(self.n*self.m)]
+        if args:
+            for pt in args:
+                self.init_F[pt[1]*self.m+pt[0]] = pt[2]
 
-    def force_density(self, ret_type, to_sap, *args, tolerance=1e-9):
+    def force_density(self, ret_type, to_sap, *args,
+                      tolerance=1e-9, remove=True):
 
         # initialize data
         # conbined x, y, z coords to a 1d list
@@ -383,7 +391,7 @@ class TwoDShapeFinding():
                                            self.__linked_force_densities[b])])
                                   ) / sum(self.__linked_force_densities[b])
                 conv_w = abs(xyz[w]-cc)
-                if conv_w < tolerance:
+                if conv_w < tolerance and remove:
                     iter_xyz.remove((w, c))
                 convergence[w] = conv_w
                 count += 1
@@ -421,20 +429,22 @@ class TwoDShapeFinding():
                 elif self.n == 1:
                     fig, ax = plt.subplots()
                     ax.plot(X[0], Z[0], linestyle="dashed", linewidth=1, c="r")
-                    ax.set_xlabel("X")
-                    ax.set_ylabel("Z")
-                    ax.set_title("Shape of Rope under Gravity Loading")
+                    # ax.set_xlabel("X")
+                    # ax.set_ylabel("Z")
+                    # ax.set_title("Shape of Rope under Gravity Loading")
                     ax.axis("equal")
                     for j in range(1, self.m-1):
                         ax.arrow(X[0][j], Z[0][j],
                                  0, -self.init_F[j],
                                  linewidth=0.1,
                                  length_includes_head=False,
-                                 head_width=0.25, head_length=1,
+                                 head_width=self.init_F[j]/4,
+                                 head_length=self.init_F[j]/2,
                                  fc="b", ec="b")
                     ax.scatter(X[0][0:self.m:self.m-1],
                                Z[0][0:self.m:self.m-1],
                                marker="^", c="black")
+                    plt.axis("off")
                     plt.show()
 
             # or just to get the text result
@@ -526,15 +536,6 @@ class TwoDShapeFinding():
             else:
                 SapModel = self.SapModel
 
-                # replacing pre_loading
-                print("--baking pre-loading")
-                SapModel.LoadPatterns.Add("Pre_loading", 8)
-                for a, b in zip(self.point_names, self.init_F):
-                    SapModel.PointObj.DeleteLoadForce(a, "Pre_loading")
-                    SapModel.PointObj.SetLoadForce(a, "Pre_loading",
-                                                   [0, 0, -b, 0, 0, 0],
-                                                   True)
-
                 # define pre-cooling temp of each frame
                 # T = ρL/(EAα) , so the stiffness K = EA/L=ρ/(Tα)
                 print("--baking pre-temp")
@@ -562,11 +563,19 @@ class TwoDShapeFinding():
             SapModel.LoadCases.StaticNonlinear.SetCase("pre")
             SapModel.LoadCases.StaticNonlinear.SetGeometricNonlinearity("pre",
                                                                         2)
+
+            # calibrate pre loading pattern name
+            if self.sap:
+                prel = self.pre_loading
+            else:
+                prel = "Pre_loading"
+
+            # turn on the pre stress NL case
             SapModel.LoadCases.StaticNonlinear.SetLoads("pre",
                                                         2,
                                                         ["Load", "Load"],
                                                         ["Pre_temp",
-                                                         "Pre_loading"],
+                                                         prel],
                                                         [1, 1])
             ret = SapModel.LoadCases.GetNameList_1()[1]
             for case in ret:
@@ -578,61 +587,45 @@ class TwoDShapeFinding():
         return lengths  # for iterative form finding
 
 
+def mass_assign(SapModel, dead_case_substitute, group="ALL"):
+    # 1, manualy mesh frames into segments like 5 or 10 segs.
+    # 2, run the default "DEAD" case to get mass data
+    # **note, mass source shall be defined to include all load patterns needed
+    SapModel.SetModelIsLocked(False)
+    ret = SapModel.LoadCases.GetNameList_1()[1]
+    for case in ret:
+        SapModel.Analyze.SetRunCaseFlag(case, False)
+    SapModel.Analyze.SetRunCaseFlag("DEAD", True)
+    SapModel.Analyze.RunAnalysis()
+    # 3, get mass of each node
+    SapModel.SelectObj.Group(group)
+    ret = SapModel.SelectObj.GetSelected()
+    SapModel.SelectObj.ClearSelection()
+    points = []
+    masses = []
+    for i in range(ret[0]):
+        if ret[1][i] == 1:
+            points.append(ret[2][i])
+    masses = []
+    for i in points:
+        ret = SapModel.Results.AssembledJointMass_1("MSSSRC1", i, 0)
+        masses.append(ret[3][0])
+    # 4, creat another case using masses fr step 3 to simulate dead
+    SapModel.SetModelIsLocked(False)
+    # 8 means "other" pattern
+    SapModel.LoadPatterns.Add(dead_case_substitute, 8)
+    for pt, ms in zip(points, masses):
+        SapModel.PointObj.DeleteLoadForce(pt, dead_case_substitute)
+        SapModel.PointObj.SetLoadForce(pt,  dead_case_substitute,
+                                       [0, 0, -ms*9.80665019960652, 0, 0, 0])
+    SapModel.Analyze.SetRunCaseFlag(dead_case_substitute, True)
+    # SapModel.Analyze.RunAnalysis()
+    return dead_case_substitute
+
+
 if __name__ == "__main__":
 
     start = time.perf_counter()
-
-    # examples
-    # 1d rope
-    m = 5
-    ccc = TwoDShapeFinding(m, 1, 2)
-    ccc.set_fix([0, 0], [m-1, 0])
-    ccc.set_init_F(*[[k, 0, 1] for k in range(1, m-1)])
-    ccc.set_init_z([0, 0, -1])
-    ccc.set_connectivities()
-    ccc.set_force_density(1, [1, 10])
-    # ll1 = ccc.force_density("t", True,
-    #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-    ll1 = ccc.force_density("g", False)
-
-    # 2d net under pretensioned with all 4 side constrained
-    m, n = 29, 29
-    constrain = []
-    for w in range(m):
-        for v in range(n):
-            if v == 0 or v == n-1:
-                constrain.append([w, v])
-            else:
-                if w == 0 or w == m-1:
-                    constrain.append([w, v])
-    boundary_z = []
-    z_max = 1
-    for w in range(m):
-        for v in range(n):
-            if v == 0:
-                boundary_z.append([w, v, z_max/(m-1)*w])
-            elif v == n-1:
-                boundary_z.append([w, v, z_max-z_max/(m-1)*w])
-            elif w == 0 and 0 < v < n-1:
-                boundary_z.append([w, v, z_max/(n-1)*v])
-            elif w == m-1 and 0 < v < n-1:
-                boundary_z.append([w, v, z_max-z_max/(n-1)*v])
-    loading = []
-    unit = 1
-    for w in range(m):
-        for v in range(n):
-            if 0 < v < n-1 and 0 < w < m-1:
-                loading.append([w, v, unit])
-    aaa = TwoDShapeFinding(m, n, 2)
-    aaa.set_fix(*constrain)
-    aaa.set_fix([20, 20], [10, 10])
-    aaa.set_init_F(*loading)
-    aaa.set_init_z(*boundary_z)
-    aaa.set_init_z([20, 20, 10], [10, 10, 10])
-    aaa.set_connectivities()
-    aaa.set_force_density(10000, [333, -10])
-    aaa.force_density("g", False,
-                      "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
 
     # example_ init from SAP2000
     # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
@@ -641,13 +634,6 @@ if __name__ == "__main__":
     # aaa.set_init_F(["2", 3], ["3", 5], ["4", 2])
     # ll1 = aaa.force_density(1e-9, "g", False,
     #                         "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
-
-    # example_ init from SAP2000-igloo
-    # aaa = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)
-    # aaa.init_fr_sap2000("China", "GB", "GB50010 C30", 2, 0.1, -1.5,
-    #                     ["G2", "China", "GB", "GB50010 C50", 2, 0.01, -0.1])
-    # aaa.set_init_F()
-    # ll1 = aaa.force_density("w", False)
 
     end = time.perf_counter()
     print("Run time: {:.2f} ms".format((end-start)*1000))
