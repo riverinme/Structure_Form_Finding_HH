@@ -64,8 +64,8 @@ Before init a new model from SAP2000...
 > b), All nodes and frame elements will be used in form finding.  
 > c), The model unit MUST be **KN.m.C**.  
 1. Open the model in SAP2000
-2. In py 
-    - Initiate the instance,  
+2. In Python 
+    - Initiate the instance  
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
         > m, n, size will be no funtional.  
     - Read data from the sap model  
