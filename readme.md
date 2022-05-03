@@ -73,7 +73,8 @@ Before init a new model from SAP2000...
                       `"China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000,`  
                       `["inner_up", "China", "JTG", "JTGD62 fpk1470", 7,`  
                       `0.3, 1500],...)`  
-        - 1st parameter, pre-defined load patterns in Sap2000.
+        - 1st parameter, a pre-defined load pattern in Sap2000.  
+            > Only point loads are allowed, nevertheless the pattern name can be anything. See bullet point 3 if you want to do form-finding under self-weight.  
         - 2nd to 5th parameters, Sap2000 material library parameters.
         - 6th parameter, section diameter of the frame object.
             > Use a circular rod to simulate everything for now...  
