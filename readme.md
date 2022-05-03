@@ -64,23 +64,23 @@ Before init a new model from SAP2000...
 > b), All nodes and frame elements will be used in form finding.  
 > c), The model unit MUST be **KN.m.C**.  
 1. Open the model in SAP2000
-2. In py, 
-    - initiate the instance,  
+2. In py 
+    - Initiate the instance,  
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
         > m, n, size will be no funtional.  
-    - then,  
-    `a.init_fr_sap2000("Pre_loading",` 
-                      `"China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000,`  
-                      `["inner_up", "China", "JTG", "JTGD62 fpk1470", 7,`  
-                      `0.3, 1500],...)`  
-        - 1st parameter, a pre-defined load pattern in Sap2000.  
+    - Read data from the sap model  
+    `a.init_fr_sap2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
+        - 1st argument, a pre-defined load pattern in Sap2000.  
             > Only point loads are allowed, nevertheless the pattern name can be anything. See bullet point 3 if you want to do form-finding under self-weight.  
         - 2nd to 5th parameters, Sap2000 material library parameters.  
-        - 6th parameter, section diameter of the frame object.  
+            > Refer to SAP2000 OAPI manual `SapModel.PropMaterial.SetMaterial` part.  
+        - 6th arguments, section diameter of the frame object.  
             > Use a circular rod to simulate everything for now...  
-        - 7th parameter, the **frame force density**.  
+        - 7th argument, the **frame force density**.  
             - Since sap2000 is involved, material properties thus are mandatory.  
-            - By using group definition in SAP2000, different materials/force densities are supported. Just put group name and other special material properties in [].  
+            - By using group definition in SAP2000, different materials/force densities are supported. Put group name and other special material properties in [], attaching it to the end of default args.  
+            `a.init_fr_sap2000("Pre_loading","China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000, ["group_name", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 1500],...)`  
+                > You can define as many group as you want, however using conceptional design and only add extra groups when necessary.  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
         - The first 2 parameters are useless.  
