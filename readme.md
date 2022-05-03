@@ -7,7 +7,7 @@
 Before init a new model from SAP2000...
 - Constrains must be pinned, i.e. Ux, Uy, Uz fixed **ONLY**
 - If using special groups for different properties, make sure the group name has been assigned to target frames.
-- If doing form-finding based on self-weight, iteration is needed, and mass source shall be defined in Sap2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
+- If doing form-finding based on self-weight, iteration is needed, and mass source shall be defined in SAP2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 ## Get Started
 ### 1. Initiate an MxN 2d web model
 **Open this file and start to rock!!!**  
@@ -52,13 +52,13 @@ Before init a new model from SAP2000...
     - 1st parameter, what's to return.  
         - "g" means to return a Matplotlib graph.  
         - "w" returns all coords after form-finding instead.  
-    - 2nd parameter, to bake to Sap2000  
+    - 2nd parameter, to bake to SAP2000  
         - True means to return a sap model.  
-            > Sap2000 must be opened by hand first.  
-            > The rest parameters are for frame properties in Sap2000.  
+            > SAP2000 must be opened by hand first.  
+            > The rest parameters are for frame properties in SAP2000.  
         - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
-### 2. Initate a model from Sap2000
+### 2. Initate a model from SAP2000
 > **Notes**
 > a), To start, copy an sap model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
 > b), All nodes and frame elements will be used in form finding.  
@@ -69,17 +69,17 @@ Before init a new model from SAP2000...
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
         > m, n, size will be no funtional.  
     - Read data from the sap model  
-    `a.init_fr_sap2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
-        - 1st argument, a pre-defined load pattern in Sap2000.  
+    `a.init_fr_SAP2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
+        - 1st argument, a pre-defined load pattern in SAP2000.  
             > Only point loads are allowed, nevertheless the pattern name can be anything. See bullet point 3 if you want to do form-finding under self-weight.  
-        - 2nd to 5th arguments, Sap2000 material library parameters.  
+        - 2nd to 5th arguments, SAP2000 material library parameters.  
             > Refer to SAP2000 OAPI manual `SapModel.PropMaterial.SetMaterial` part.  
         - 6th arguments, section diameter of the frame object.  
             > Use a circular rod to simulate everything for now...  
         - 7th argument, the **frame force density**.  
-            - Since sap2000 is involved, material properties thus are mandatory.  
+            - Since SAP2000 is involved, material properties thus are mandatory.  
             - By using group definition in SAP2000, different materials/force densities are supported. Put group name and other special material properties in [], attaching it to the end of default args.  
-            `a.init_fr_sap2000("Pre_loading","China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000, ["group_name", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 1500],...)`  
+            `a.init_fr_SAP2000("Pre_loading","China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000, ["group_name", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 1500],...)`  
                 > You can define as many group as you want, however using conceptional design and only add extra groups when necessary.  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
