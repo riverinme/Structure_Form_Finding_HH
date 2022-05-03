@@ -83,7 +83,7 @@ Before init a new model from SAP2000...
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
         - The first 2 parameters are useless.  
-        - If `remove=True`, tolerance can be larger, like 1e-4.  
+        - If `remove=False`, tolerance can actually be larger, like 1e-4.  
             > The idea behind "remove" is a joint only affects joints nearby. If the location between the current iterative step and the previous step is less than the tolerance, then this joint can be **removed** from the next step. It can improve the speed but needs carefully reviewing the form found.  
         - FYI, this method can return frame lengths.  
 3. If you want to do form-finding under structure self-weight,  
