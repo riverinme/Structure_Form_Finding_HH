@@ -25,7 +25,7 @@ ccc.set_connectivities()  # make connections to nodes
 ccc.set_force_density(1, [1, 10])
 # run. "g" means to give a graph for out put
 # False means not to export to sap2000
-ll1 = ccc.force_density("g", False)
+ll1 = ccc.force_density("g", True, "China", "JTG", "JTGD62 fpk1470", 7, 0.06)
 
 # # ****eg2 random loading
 # for i in range(9):
@@ -38,16 +38,16 @@ ll1 = ccc.force_density("g", False)
 #     ccc.set_force_density(50)
 #     ll1 = ccc.force_density("g", False)
 
-# ****eg2 random loading arch
-for i in range(9):
-    m = 10
-    ccc = TwoDShapeFinding(m, 1, 1)
-    ccc.set_fix([0, 0], [m-1, 0])
-    ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
-    ccc.set_init_z()
-    ccc.set_connectivities()
-    ccc.set_force_density(-1)
-    ll1 = ccc.force_density("g", False)
+# # ****eg2 random loading arch
+# for i in range(9):
+#     m = 10
+#     ccc = TwoDShapeFinding(m, 1, 1)
+#     ccc.set_fix([0, 0], [m-1, 0])
+#     ccc.set_init_F(*[[k, 0, np.random.rand()] for k in range(1, m-1)])
+#     ccc.set_init_z()
+#     ccc.set_connectivities()
+#     ccc.set_force_density(-1)
+#     ll1 = ccc.force_density("g", False)
 
 # # ****eg3 random joint forces
 # for i in range(5):
