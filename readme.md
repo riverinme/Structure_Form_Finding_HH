@@ -72,7 +72,7 @@ Before init a new model from SAP2000...
     `a.init_fr_sap2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
         - 1st argument, a pre-defined load pattern in Sap2000.  
             > Only point loads are allowed, nevertheless the pattern name can be anything. See bullet point 3 if you want to do form-finding under self-weight.  
-        - 2nd to 5th parameters, Sap2000 material library parameters.  
+        - 2nd to 5th arguments, Sap2000 material library parameters.  
             > Refer to SAP2000 OAPI manual `SapModel.PropMaterial.SetMaterial` part.  
         - 6th arguments, section diameter of the frame object.  
             > Use a circular rod to simulate everything for now...  
