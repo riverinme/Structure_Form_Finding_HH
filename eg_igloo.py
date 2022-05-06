@@ -17,7 +17,7 @@ aaa.init_fr_sap2000("Pre_loading",  # preloading case
                      -0.1]  # force density for sp1
                     )
 # output format and to_sap is not working when import fr sap alreaday
-ll1 = aaa.force_density("w", False)
+ll1 = aaa.force_density("t", False, remove=False)
 
 end = time.perf_counter()
 print("****Run time: {:.2f} ms****".format((end-start)*1000))
