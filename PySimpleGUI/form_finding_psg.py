@@ -11,9 +11,9 @@ sg.theme('DarkAmber')
 
 # All the stuff inside your window.
 layout = [[sg.Text('1, 选择模式/Select a Mode')],
-          [sg.Radio('单索/Cable or Arch', "RadioDemo", default=True, size=(20, 1), key = "001"),
-           sg.Radio('索网/Web', "RadioDemo", size=(10, 1)),
-           sg.Radio('SAP2000', "RadioDemo", size=(10, 1))],
+          [sg.Radio('单索/Cable or Arch', "Modes", default=True, size=(20, 1), key="Mode1"),
+           sg.Radio('索网/Web', "Modes", size=(10, 1), key="Mode2"),
+           sg.Radio('SAP2000', "Modes", size=(10, 1), key="Mode3")],
           [sg.HSep()],
           [sg.Text('2, 设置约束/Constrains')],
           [sg.HSep()],
@@ -36,6 +36,6 @@ while True:
     # print('You entered ', values)
     if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
         break
-    
+
 
 window.close()
