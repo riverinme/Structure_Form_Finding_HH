@@ -1,12 +1,9 @@
 from setuptools import setup
 
-with open("README.md", "r", encoding='utf-8') as fh:
-    long_description = fh.read()
 
 setup(name='TwoD_Form_Finding',
       version='1.0.5',
       description='A tool for building structure form-finding',
-      long_description=long_description,
       author='HH',
       author_email='river_in_me@qq.com',
       url="https://github.com/riverinme/Structure_Form_Finding_HH",

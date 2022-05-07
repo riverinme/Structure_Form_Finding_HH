@@ -1,7 +1,11 @@
 ## About
 
 
-**To find the shape/form of a highly geometry-nonlinear structure.**
+**To find the shape/form of a highly geometry-nonlinear structure.**  
+  
+`pip install TwoD-Form-Finding==1.0.5`  
+
+
 
 ## Checklist 
 Before init a new model from SAP2000...
