@@ -1,0 +1,12 @@
+Metadata-Version: 1.2
+Name: TwoD-Form-Finding
+Version: 1.0.4
+Summary: A tool for building structure form-finding
+Home-page: UNKNOWN
+Author: HH
+Author-email: river_in_me@qq.com
+License: MIT
+Description: UNKNOWN
+Keywords: form-finding
+Platform: UNKNOWN
+Requires-Python: >=3.8.0
