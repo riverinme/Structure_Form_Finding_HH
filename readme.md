@@ -3,7 +3,7 @@
 
 **To find the shape/form of a highly geometry-nonlinear structure.**  
   
-`pip install TwoD-Form-Finding==1.0.5`  
+`pip install TwoD-Form-Finding`  
 
 
 
