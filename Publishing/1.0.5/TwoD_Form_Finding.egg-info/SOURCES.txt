@@ -1,3 +1,4 @@
+README.md
 TwoD_Form_Finding.py
 setup.py
 TwoD_Form_Finding.egg-info/PKG-INFO
