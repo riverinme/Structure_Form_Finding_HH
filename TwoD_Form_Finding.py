@@ -190,6 +190,9 @@ class TwoDShapeFinding():
                 for i in range(ret[0]):
                     if ret[2][i] == self.pre_loading:
                         self.init_F.append(-ret[7][i])
+                        break
+                else:
+                    self.init_F.append(0)
             except Exception:
                 self.init_F.append(0)
 
