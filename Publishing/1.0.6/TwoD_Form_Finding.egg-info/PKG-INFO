@@ -1,0 +1,17 @@
+Metadata-Version: 1.2
+Name: TwoD-Form-Finding
+Version: 1.0.6
+Summary: A tool for building structure form-finding
+Home-page: https://github.com/riverinme/Structure_Form_Finding_HH
+Author: HH
+Author-email: river_in_me@qq.com
+License: MIT
+Description: UNKNOWN
+Keywords: form-finding
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Requires-Python: >=3.8.0
