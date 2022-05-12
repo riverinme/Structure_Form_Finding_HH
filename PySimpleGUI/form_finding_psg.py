@@ -10,14 +10,17 @@ import PySimpleGUI as sg
 sg.theme('DarkAmber')
 
 MAX_ROWS = 1
-MAX_COL = 3
+
 
 column_title = [[sg.Text("", size=(3, 1), justification='right'),
                  sg.Text("列号/Col. No.", size=(11, 1)),
                  sg.Text("行号/Row No.", size=(11, 1)),
                  sg.Text("标高/Init. Z", size=(11, 1))]]
-columm_layout = [[sg.Text(str(i+1), size=(3, 1), justification='right')] + [sg.InputText("0", size=(12, 1), pad=(
-    1, 1), border_width=0, justification='center', key=(i, j), enable_events=True) for j in range(MAX_COL)] for i in range(MAX_ROWS)]
+columm_layout = [[sg.Text("", size=(3, 1), justification='right')] +
+                 [sg.InputText("0", size=(12, 1), pad=(1, 1), border_width=0,
+                               justification='center', key=(i, j),
+                               enable_events=True) for j in range(3)]
+                 for i in range(1)]
 
 # All the stuff inside your window.
 layout = [[sg.Text('1, 选择模式/Select a Mode')],
@@ -53,7 +56,7 @@ layout = [[sg.Text('1, 选择模式/Select a Mode')],
           [sg.Text("-附加约束/Addtional Constrains")],
           [sg.Text("", size=(1, 1)),
            sg.Text("附加约束数量/No. of Addtional Constrains"),
-           sg.Input('0', key='ac', size=(5, 1),
+           sg.Input('1', key='ac', size=(5, 1),
                     enable_events=True)],
           [sg.Col(column_title)],
           [sg.Col(columm_layout)],
@@ -166,5 +169,6 @@ while True:
                 boundary_z = [[0, 0, LD], [m-1, 0, RD]]
     except Exception:
         continue
+
 
 window.close()
