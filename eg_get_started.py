@@ -16,24 +16,24 @@ ccc.set_force_density(1, [1, 10])  # 默认的力密度为1kN/m，同时1号单�
 ll1 = ccc.force_density("g", False)  # 进行分析，同时返回找形后的图片结果，“False”表示不输出到SAP2000
 
 # example_ get_started_web
-ccc = TwoDShapeFinding(5, 5, 1)  # 生成一个找形实例。5x5的网格。网格间距1(m)
-ccc.set_fix([0, 0], [0, 4], [4, 0], [4, 4])  # 4端铰接
-# 自由收缩，不加任何力
-ccc.set_init_F()
-ccc.set_init_z([0, 0, 1], [4, 4, 1])  # 对角角点标高为1m
-ccc.set_connectivities()  # 生成节点之间的单元
-ccc.set_force_density(1)  # 默认的力密度为1kN/m
-ll1 = ccc.force_density("g", False, remove=False)  # 进行分析，同时返回找形后的图片结果
+# ccc = TwoDShapeFinding(5, 5, 1)  # 生成一个找形实例。5x5的网格。网格间距1(m)
+# ccc.set_fix([0, 0], [0, 4], [4, 0], [4, 4])  # 4端铰接
+# # 自由收缩，不加任何力
+# ccc.set_init_F()
+# ccc.set_init_z([0, 0, 1], [4, 4, 1])  # 对角角点标高为1m
+# ccc.set_connectivities()  # 生成节点之间的单元
+# ccc.set_force_density(1)  # 默认的力密度为1kN/m
+# ll1 = ccc.force_density("g", False, remove=False)  # 进行分析，同时返回找形后的图片结果
 
 # example_ get_started_web
-ccc = TwoDShapeFinding(5, 5, 1)  # 生成一个找形实例。5x5的网格。网格间距1(m)
-ccc.set_fix([0, 0], [0, 4], [4, 0], [4, 4])  # 4端铰接
-# 中间施加1kN的向下的力
-ccc.set_init_F([2, 2, 1])
-ccc.set_init_z([0, 0, 1], [4, 4, 1])  # 对角角点标高为1m
-ccc.set_connectivities()  # 生成节点之间的单元
-ccc.set_force_density(1)  # 默认的力密度为1kN/m
-ll1 = ccc.force_density("g", False, remove=False)  # 进行分析，同时返回找形后的图片结果
+# ccc = TwoDShapeFinding(5, 5, 1)  # 生成一个找形实例。5x5的网格。网格间距1(m)
+# ccc.set_fix([0, 0], [0, 4], [4, 0], [4, 4])  # 4端铰接
+# # 中间施加1kN的向下的力
+# ccc.set_init_F([2, 2, 1])
+# ccc.set_init_z([0, 0, 1], [4, 4, 1])  # 对角角点标高为1m
+# ccc.set_connectivities()  # 生成节点之间的单元
+# ccc.set_force_density(1)  # 默认的力密度为1kN/m
+# ll1 = ccc.force_density("g", False, remove=False)  # 进行分析，同时返回找形后的图片结果
 
 end = time.perf_counter()
 print("****Run time: {:.2f} ms****".format((end-start)*1000))
