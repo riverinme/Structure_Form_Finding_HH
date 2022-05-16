@@ -4,7 +4,7 @@
   
 `pip install TwoD-Form-Finding`  
 
-# Checklist
+## Checklist
 
 Before init a new model from SAP2000...
 
@@ -12,9 +12,9 @@ Before init a new model from SAP2000...
 - If using special groups for different properties, make sure the group name has been assigned to target frames.
 - If doing form-finding based on self-weight, iteration is needed, and mass source shall be defined in SAP2000. See [eg double oval form found by dead](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_double_oval_form_found%20by%20dead.py)
 
-# Get Started
+## Get Started
 
-## 1. Initiate an MxN 2d web model
+### 1. Initiate an MxN 2d web model
 
 **Open this file and start to rock!!!**  
 [eg_2d-pretensioned-net](https://github.com/riverinme/Structure_Form_Finding_HH/blob/master/eg_2d-pretensioned-net.py)
@@ -67,7 +67,7 @@ Before init a new model from SAP2000...
     - If it is False, no material properties needed.  
         `aaa.force_density("g", False)`  
 
-## 2. Initate a model from SAP2000
+### 2. Initate a model from SAP2000
 
 > **Notes**  
 > a), To start, copy an example SAP2000 model from [here](https://github.com/riverinme/Structure_Form_Finding_HH/tree/master/SAP%20Models) and the relative py.  
