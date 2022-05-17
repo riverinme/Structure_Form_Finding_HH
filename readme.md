@@ -38,13 +38,13 @@ Before init a new model from SAP2000...
   - Joint loads are considered positive in the gravity direction.  
   - One can just set initial loads of all 0 by  
     `aaa.set_init_F()`  
-- Set bounday conditions  
+- Set boundary conditions  
 `aaa.set_init_z(*boundary_z)`  
   - "boundary_z" means to define initial z coords for every point.  
   - One can just set initial Z coords of all 0 by  
     `aaa.set_init_z()`  
   - If you need some points having different z coords, just insert  
-    `aaa.set_init_z([0, 0, 0], [2, 4, 1]) # optional for addtional z coords`  
+    `aaa.set_init_z([0, 0, 0], [2, 4, 1]) # optional for additional z coords`  
         > It's meaningless to assign initial z coords to joints not constrained...  
 - Set connections  
 `aaa.set_connectivities()`  
@@ -78,7 +78,7 @@ Before init a new model from SAP2000...
 2. In Python
     - Initiate the instance  
     `a = TwoDShapeFinding(1, 3, 1, init_fr_sap=True)`
-        > The first 3 argments here is not funtional.  
+        > The first 3 arguments here is not functional.  
     - Read data from the SAP2000 model  
     `a.init_fr_sap2000("Pre_loading", "China", "JTG", "JTGD62 fpk1470", 7, 0.3, 2000)`  
         - 1st argument, a pre-defined load pattern in SAP2000.  
@@ -94,7 +94,7 @@ Before init a new model from SAP2000...
                 > You can define as many group as you want, however using conceptional design and only add extra groups when necessary.  
     - Run
     `ll1 = a.force_density("w", False, tolerance=1e-9, remove=False)`  
-        - The first 2 arguments is not funtional.  
+        - The first 2 arguments is not functional.  
         - If `remove=False`, tolerance can actually be larger, like 1e-4.  
             > The idea behind "remove" is a joint only affects joints nearby. If the location between the current iterative step and the previous step is less than the tolerance, then this joint can be **removed** from the next step. It can improve the speed but needs carefully reviewing the form found.  
         - FYI, this method can return frame lengths.  
