@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: TwoD-Form-Finding
+Version: 1.0.7
+Summary: A tool for building structure form-finding. Update to Latest SAP2000 25 API 
+Home-page: https://github.com/riverinme/Structure_Form_Finding_HH
+Author: HH
+Author-email: river_in_me@qq.com
+License: MIT
+Keywords: form-finding
+Classifier: Development Status :: 4 - Beta
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Requires-Python: >=3.8.0
+License-File: LICENSE
